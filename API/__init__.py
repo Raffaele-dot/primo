@@ -11,7 +11,7 @@ df = pd.read_excel(os.path.join(os.path.dirname(__file__), '../data.xlsx'))
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
-@app.route('/filter', methods=['GET'])
+@app.route('/api/filter', methods=['GET'])
 def filter_data():
     # Get filter parameters from the request
     filters = request.args
