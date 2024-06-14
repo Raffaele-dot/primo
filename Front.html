@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <div>
+        <label for="filter1">Filter 1:</label>
+        <input type="text" id="filter1" name="filter1">
+        
+        <label for="filter2">Filter 2:</label>
+        <input type="text" id="filter2" name="filter2">
+        
+        <button id="apply-filters">Apply Filters</button>
+    </div>
+
+    <table id="data-table" class="display">
+        <thead>
+            <tr>
+                <th>Column 1</th>
+                <th>Column 2</th>
+                <th>Column 3</th>
+                <!-- Add more columns as needed -->
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <script>
+        $(document).ready(function() {
+            var table = $('#data-table').DataTable();
+
+            $('#apply-filters').click(function() {
+                var filter1 = $('#filter1').val();
+                var filter2 = $('#filter2').val();
+                
+                $.get('/filter', { filter1: filter1, filter2: filter2 }, function(data) {
+                    table.clear();
+                    table.rows.add(data);
+                    table.draw();
+                });
+            });
+        });
+    </script>130390
+</body>
+</html>
