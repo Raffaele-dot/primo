@@ -1,15 +1,15 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, jsonify, send_from_directory
 import pandas as pd
 import os
 
-app = Flask(__name__, static_folder='../static', template_folder='../static')
+app = Flask(__name__, static_folder='../static')
 
 # Load the Excel data
 df = pd.read_excel(os.path.join(os.path.dirname(__file__), '../data.xlsx'))
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return send_from_directory(app.static_folder, 'index.html')
 
 @app.route('/filter', methods=['GET'])
 def filter_data():
