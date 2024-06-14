@@ -13,15 +13,11 @@ def index():
 
 @app.route('/api/filter', methods=['GET'])
 def filter_data():
-    # Get filter parameters from the request
     filters = request.args
-    
     filtered_df = df.copy()
-    
     for key, value in filters.items():
         if value:
             filtered_df = filtered_df[filtered_df[key] == value]
-
     data = filtered_df.to_dict(orient='records')
     return jsonify(data)
 
