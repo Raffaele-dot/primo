@@ -11,6 +11,11 @@ df = pd.read_excel(os.path.join(os.path.dirname(__file__), '../data.xlsx'))
 def index():
     return send_from_directory(app.static_folder, 'index.html')
 
+@app.route('/api/columns', methods=['GET'])
+def get_columns():
+    columns = df.columns.tolist()
+    return jsonify(columns)
+
 @app.route('/api/filter', methods=['GET'])
 def filter_data():
     filters = request.args
