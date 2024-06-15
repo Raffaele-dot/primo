@@ -4,35 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Dashboard</title>
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
-    <div>
-        <label for="filter1">Filter 1:</label>
-        <input type="text" id="filter1" name="filter1">
-        
-        <label for="filter2">Filter 2:</label>
-        <input type="text" id="filter2" name="filter2">
-        
-        <button id="apply-filters">Apply Filters</button>
+    <div id="filterContainer">
+        <!-- Dynamic filter inputs will be inserted here -->
     </div>
-
-    <table id="data-table" class="display">
+    <button id="applyFilters">Apply Filters</button>
+    <table id="data-table" border="1">
         <thead>
             <tr>
-                <th>Column 1</th>
-                <th>Column 2</th>
-                <th>Column 3</th>
-                <!-- Add more columns as needed -->
+                <!-- Dynamic table headers will be inserted here -->
             </tr>
         </thead>
         <tbody>
+            <!-- Data will be inserted here -->
         </tbody>
     </table>
-
-    <script src="script.js"></script>
 </body>
 </html>
-
