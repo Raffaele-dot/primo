@@ -11,6 +11,7 @@ df = pd.read_excel('data.xlsx')
 @app.route('/api/columns', methods=['GET'])
 def get_columns():
     columns = df.columns.tolist()
+    print('Columns:', columns)  # Add this line to log columns
     return jsonify(columns)
 
 # Endpoint to get unique values for a column
@@ -19,6 +20,7 @@ def get_column_values():
     column = request.args.get('column')
     if column in df.columns:
         values = df[column].dropna().unique().tolist()
+        print(f'Values for {column}:', values)  # Add this line to log values
         return jsonify(values)
     else:
         return jsonify([]), 400
@@ -36,6 +38,7 @@ def filter_data():
             filtered_df = filtered_df[filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
 
     data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
+    print('Filtered data:', data)  # Add this line to log filtered data
     return jsonify(data)
 
 # Serve index.html
