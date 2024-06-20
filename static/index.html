@@ -3,23 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Dashboard</title>
-    <script src="script.js" defer></script>
+    <title>Excel Data Viewer</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="filterContainer">
-        <!-- Dynamic filter inputs will be inserted here -->
+    <button id="openFilterModal">Filter</button>
+
+    <div class="table-container">
+        <table id="data-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
     </div>
-    <button id="applyFilters">Apply Filters</button>
-    <table id="data-table" border="1">
-        <thead>
-            <tr>
-                <!-- Dynamic table headers will be inserted here -->
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data will be inserted here -->
-        </tbody>
-    </table>
+
+    <!-- Filter Modal -->
+    <div id="filterModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Select a column to filter</h2>
+            <div id="columnContainer"></div>
+        </div>
+    </div>
+
+    <!-- Value Modal -->
+    <div id="valueModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Select a value to filter</h2>
+            <div class="filter-actions">
+                <input type="text" id="keywordInput" placeholder="Enter keyword">
+                <button id="selectAllButton">Select All</button>
+                <button id="applyFilterButton">Apply Filter</button>
+            </div>
+            <div id="valueContainer"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
