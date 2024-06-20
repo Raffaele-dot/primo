@@ -27,7 +27,11 @@ function fetchColumns() {
     fetch('/api/columns')
         .then(response => {
             console.log('Columns response:', response);
-            return response.json();
+            return response.text();  // Use text() to see the actual content
+        })
+        .then(text => {
+            console.log('Columns response text:', text);
+            return JSON.parse(text);  // Parse the JSON string
         })
         .then(fetchedColumns => {
             columns = fetchedColumns;
