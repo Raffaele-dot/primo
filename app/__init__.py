@@ -1,9 +1,8 @@
 from flask import Flask, jsonify, request, send_from_directory
 import pandas as pd
-import numpy as np
 import os
 
-app = Flask(__name__, static_folder='../static', template_folder='../static')
+app = Flask(__name__, static_folder='../static')
 
 # Load Excel data
 df = pd.read_excel('data.xlsx')
@@ -36,8 +35,7 @@ def filter_data():
             regex_pattern = '|'.join(filters)
             filtered_df = filtered_df[filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
 
-    filtered_df = filtered_df.replace({np.nan: None})  # Replace NaN with None
-    data = filtered_df.to_dict(orient='records')
+    data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
     return jsonify(data)
 
 # Serve index.html
@@ -46,7 +44,7 @@ def index():
     return send_from_directory(app.static_folder, 'index.html')
 
 # Serve other static files
-@app.route('/<path:filename>')
+@app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
 
