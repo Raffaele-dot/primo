@@ -1,0 +1,135 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    margin: 0;
+    padding: 0;
+}
+
+button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    background-color: #007acc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+button:hover {
+    background-color: #005f99;
+}
+
+.table-container {
+    width: 100%;
+    overflow-y: auto;
+    margin-top: 10px;
+    max-height: 80vh; /* Adjust the height as needed */
+    border: 1px solid #333;
+    border-radius: 3px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto; /* Change to auto to adjust width */
+}
+
+th, td {
+    border: 1px solid #333;
+    padding: 8px;
+    text-align: left;
+    white-space: normal; /* Allow text wrapping for table cells */
+    word-wrap: break-word; /* Break words that are too long */
+    color: #d4d4d4;
+}
+
+thead th {
+    position: sticky;
+    top: 0;
+    background-color: #252526;
+    z-index: 1;
+    white-space: nowrap; /* Prevent wrapping of header text */
+    color: #569cd6; /* Light blue color for headers */
+}
+
+th:first-child, td:first-child {
+    width: 50px;
+    text-align: center;
+    background-color: #252526;
+}
+
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgba(30, 30, 30, 0.85); 
+    padding-top: 60px; 
+}
+
+.modal-content {
+    background-color: #1e1e1e;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #333;
+    width: 80%;
+    border-radius: 3px;
+}
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+}
+
+.filter-actions input[type="text"] {
+    flex: 1;
+    margin-right: 10px;
+    padding: 5px;
+    background-color: #333;
+    color: #d4d4d4;
+    border: 1px solid #333;
+    border-radius: 3px;
+}
+
+.filter-actions button {
+    margin: 0 5px;
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.filter-actions button:hover {
+    background-color: #005f99;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #d4d4d4;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a {
+    color: #569cd6;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
