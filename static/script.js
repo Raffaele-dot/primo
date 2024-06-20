@@ -25,13 +25,16 @@ let currentValues = [];
 
 function fetchColumns() {
     fetch('/api/columns')
-        .then(response => response.json())
+        .then(response => {
+            console.log('Columns response:', response);
+            return response.json();
+        })
         .then(fetchedColumns => {
             columns = fetchedColumns;
             createColumnButtons(columns);
             createTableHeaders(columns);
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => console.error('Error fetching columns:', error));
 }
 
 function createColumnButtons(columns) {
@@ -62,12 +65,15 @@ function createTableHeaders(columns) {
 
 function fetchColumnValues(column) {
     fetch(`/api/column_values?column=${column}`)
-        .then(response => response.json())
+        .then(response => {
+            console.log('Column values response:', response);
+            return response.json();
+        })
         .then(values => {
             currentValues = values;
             createValueButtons(values);
         })
-        .catch(error => console.error('Error:', error));
+        .catch(error => console.error('Error fetching column values:', error));
 }
 
 function createValueButtons(values) {
@@ -112,12 +118,15 @@ function applyMultipleFilters() {
         const url = new URL('/api/filter', window.location.origin);
 
         fetch(`${url}?${params}`)
-            .then(response => response.json())
+            .then(response => {
+                console.log('Filter response:', response);
+                return response.json();
+            })
             .then(data => {
                 console.log('Filtered Data:', data); // Log the filtered data
                 populateTable(data);
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => console.error('Error applying filters:', error));
     }
 }
 
