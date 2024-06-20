@@ -51,11 +51,5 @@ def index():
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
 
-# Expose the WSGI application
-def handler(event, context):
-    from flask_lambda import FlaskLambda
-    lambda_app = FlaskLambda(app)
-    return lambda_app(event, context)
-
 if __name__ == '__main__':
     app.run(debug=True)
