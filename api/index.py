@@ -5,7 +5,7 @@ import os
 app = Flask(__name__, static_folder='../static')
 
 # Load Excel data
-df = pd.read_excel('data.xlsx')
+df = pd.read_excel(os.path.join(os.path.dirname(__file__), '../data.xlsx'))
 
 # Endpoint to get columns
 @app.route('/api/columns', methods=['GET'])
@@ -50,6 +50,12 @@ def index():
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     return send_from_directory(app.static_folder, filename)
+
+# Expose the WSGI application
+def handler(event, context):
+    from flask_lambda import FlaskLambda
+    lambda_app = FlaskLambda(app)
+    return lambda_app(event, context)
 
 if __name__ == '__main__':
     app.run(debug=True)
