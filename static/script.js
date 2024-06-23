@@ -101,14 +101,29 @@ function applyMultipleFilters() {
         const url = new URL('/api/filter', window.location.origin);
 
         fetch(`${url}?${params}`)
-            .then(response => response.json())
-            .then(data => populateTiles(data))
-            .catch(error => console.error('Error applying filters:', error));
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Filtered Data:', data); // Log the filtered data
+                populateTiles(data);
+            })
+            .catch(error => {
+                console.error('Error applying filters:', error);
+            });
     }
 }
 
 function populateTiles(data) {
     const container = document.getElementById('tiles-container');
+    if (!container) {
+        console.error('Could not find tiles-container element');
+        return;
+    }
+
     container.innerHTML = ''; // Clear existing tiles
 
     if (data.length === 0) {
