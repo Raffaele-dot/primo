@@ -25,18 +25,10 @@ let currentValues = [];
 
 function fetchColumns() {
     fetch('/api/columns')
-        .then(response => {
-            console.log('Columns response:', response);
-            return response.text();  // Use text() to see the actual content
-        })
-        .then(text => {
-            console.log('Columns response text:', text);
-            return JSON.parse(text);  // Parse the JSON string
-        })
+        .then(response => response.json())
         .then(fetchedColumns => {
             columns = fetchedColumns;
             createColumnButtons(columns);
-            createTableHeaders(columns);
         })
         .catch(error => console.error('Error fetching columns:', error));
 }
@@ -57,22 +49,9 @@ function createColumnButtons(columns) {
     });
 }
 
-function createTableHeaders(columns) {
-    const thead = document.querySelector('#data-table thead tr');
-    thead.innerHTML = '<th>#</th>'; // Add row count header
-    columns.forEach(column => {
-        const th = document.createElement('th');
-        th.innerText = column;
-        thead.appendChild(th);
-    });
-}
-
 function fetchColumnValues(column) {
     fetch(`/api/column_values?column=${column}`)
-        .then(response => {
-            console.log('Column values response:', response);
-            return response.json();
-        })
+        .then(response => response.json())
         .then(values => {
             currentValues = values;
             createValueButtons(values);
@@ -122,50 +101,45 @@ function applyMultipleFilters() {
         const url = new URL('/api/filter', window.location.origin);
 
         fetch(`${url}?${params}`)
-            .then(response => {
-                console.log('Filter response:', response);
-                return response.json();
-            })
-            .then(data => {
-                console.log('Filtered Data:', data); // Log the filtered data
-                populateTable(data);
-            })
+            .then(response => response.json())
+            .then(data => populateTiles(data))
             .catch(error => console.error('Error applying filters:', error));
     }
 }
 
-function populateTable(data) {
-    const tbody = document.querySelector('#data-table tbody');
-    tbody.innerHTML = ''; // Clear existing rows
+function populateTiles(data) {
+    const container = document.getElementById('tiles-container');
+    container.innerHTML = ''; // Clear existing tiles
 
     if (data.length === 0) {
-        const tr = document.createElement('tr');
-        const td = document.createElement('td');
-        td.colSpan = columns.length + 1; // Adjust for row count column
-        td.innerText = 'No data found';
-        tr.appendChild(td);
-        tbody.appendChild(tr);
+        const message = document.createElement('div');
+        message.innerText = 'No data found';
+        container.appendChild(message);
     } else {
-        data.forEach((row, index) => {
-            const tr = document.createElement('tr');
-            const tdIndex = document.createElement('td');
-            tdIndex.innerText = index + 1;
-            tdIndex.style.padding = '5px';
-            tr.appendChild(tdIndex);
+        data.forEach(row => {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+
             columns.forEach(column => {
-                const td = document.createElement('td');
-                let cellContent = row[column] !== null ? row[column].toString() : '';
-                if (column === 'Linkedin_URL' && cellContent) {
-                    td.innerHTML = `<a href="${cellContent}" target="_blank">Go to the page</a>`;
+                const content = document.createElement('div');
+                if (column === 'title') {
+                    const title = document.createElement('h3');
+                    title.innerText = row[column];
+                    tile.appendChild(title);
                 } else {
-                    if (cellContent.length > 500) {
+                    const text = document.createElement('p');
+                    let cellContent = row[column] !== null ? row[column].toString() : '';
+                    if (column === 'Linkedin_URL' && cellContent) {
+                        cellContent = `<a href="${cellContent}" target="_blank">Go to the page</a>`;
+                    } else if (cellContent.length > 500) {
                         cellContent = cellContent.substring(0, 500) + ' ...[]';
                     }
-                    td.innerText = cellContent;
+                    text.innerHTML = cellContent;
+                    tile.appendChild(text);
                 }
-                tr.appendChild(td);
             });
-            tbody.appendChild(tr);
+
+            container.appendChild(tile);
         });
     }
 }
