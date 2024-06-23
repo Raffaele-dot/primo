@@ -21,43 +21,27 @@ button:hover {
     background-color: #005f99;
 }
 
-.table-container {
-    width: 100%;
-    overflow-y: auto;
-    margin-top: 10px;
-    max-height: 80vh; /* Adjust the height as needed */
-    border: 1px solid #333;
-    border-radius: 3px;
+.tiles-container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
 }
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    table-layout: auto; /* Change to auto to adjust width */
-}
-
-th, td {
+.tile {
+    background-color: #252526;
     border: 1px solid #333;
-    padding: 8px;
-    text-align: left;
-    white-space: normal; /* Allow text wrapping for table cells */
-    word-wrap: break-word; /* Break words that are too long */
+    border-radius: 5px;
+    margin: 10px 0;
+    padding: 15px;
+    width: calc(100% - 30px); /* Full width minus padding */
+    box-sizing: border-box;
     color: #d4d4d4;
 }
 
-thead th {
-    position: sticky;
-    top: 0;
-    background-color: #252526;
-    z-index: 1;
-    white-space: nowrap; /* Prevent wrapping of header text */
-    color: #569cd6; /* Light blue color for headers */
-}
-
-th:first-child, td:first-child {
-    width: 50px;
-    text-align: center;
-    background-color: #252526;
+.tile h3 {
+    margin-top: 0;
+    font-weight: bold;
+    color: #569cd6; /* Blue color similar to Visual Studio Code */
 }
 
 .modal {
