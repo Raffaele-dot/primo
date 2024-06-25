@@ -98,22 +98,21 @@ function applyMultipleFilters() {
         const params = new URLSearchParams();
         params.append(currentColumn, selectedValues.join('|'));
 
+        // Add support for exclusion filters by prefixing with !
+        const excludeGerman = document.getElementById('excludeGerman').checked;
+        if (excludeGerman) {
+            params.set(currentColumn, `!${selectedValues.join('|')}`);
+        }
+
         const url = new URL('/api/filter', window.location.origin);
 
         fetch(`${url}?${params}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 console.log('Filtered Data:', data); // Log the filtered data
                 populateTiles(data);
             })
-            .catch(error => {
-                console.error('Error applying filters:', error);
-            });
+            .catch(error => console.error('Error applying filters:', error));
     }
 }
 
