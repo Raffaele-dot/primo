@@ -34,8 +34,15 @@ def filter_data():
     for column, values in query_params.items():
         if column in df.columns:
             filters = values[0].split('|')
+            exclude = False
+            if filters[0].startswith('!'):
+                exclude = True
+                filters = [f[1:] for f in filters]
             regex_pattern = '|'.join(filters)
-            filtered_df = filtered_df[filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
+            if exclude:
+                filtered_df = filtered_df[~filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
+            else:
+                filtered_df = filtered_df[filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
 
     data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
     print('Filtered data:', data)
