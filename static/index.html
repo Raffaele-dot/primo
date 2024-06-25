@@ -9,7 +9,6 @@
 <body>
     <button id="openFilterModal">Filter</button>
 
-    <!-- Ensure this container is correctly included -->
     <div id="tiles-container" class="tiles-container"></div>
 
     <!-- Filter Modal -->
@@ -30,6 +29,10 @@
                 <input type="text" id="keywordInput" placeholder="Enter keyword">
                 <button id="selectAllButton">Select All</button>
                 <button id="applyFilterButton">Apply Filter</button>
+            </div>
+            <div>
+                <input type="checkbox" id="excludeGerman">
+                <label for="excludeGerman">Exclude German</label>
             </div>
             <div id="valueContainer"></div>
         </div>
