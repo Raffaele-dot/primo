@@ -17,11 +17,16 @@ document.addEventListener('DOMContentLoaded', function() {
         applyMultipleFilters();
         closeModal('valueModal');
     });
+
+    document.getElementById('notButton').addEventListener('click', function() {
+        toggleNotFilter();
+    });
 });
 
 let columns = [];
 let currentColumn = '';
 let currentValues = [];
+let isNotFilter = false;
 
 function fetchColumns() {
     fetch('/api/columns')
@@ -90,19 +95,24 @@ function selectAllValues() {
     });
 }
 
+function toggleNotFilter() {
+    isNotFilter = !isNotFilter;
+    const notButton = document.getElementById('notButton');
+    notButton.classList.toggle('active', isNotFilter);
+    notButton.innerText = isNotFilter ? 'Not' : 'Include';
+}
+
 function applyMultipleFilters() {
     const selectedValues = Array.from(document.querySelectorAll('#valueContainer input[type="checkbox"]:checked'))
                                 .map(checkbox => checkbox.value);
 
     if (selectedValues.length > 0) {
         const params = new URLSearchParams();
-        params.append(currentColumn, selectedValues.join('|'));
-
-        // Add support for exclusion filters by prefixing with !
-        const excludeGerman = document.getElementById('excludeGerman').checked;
-        if (excludeGerman) {
-            params.set(currentColumn, `!${selectedValues.join('|')}`);
+        let filterValue = selectedValues.join('|');
+        if (isNotFilter) {
+            filterValue = `!${filterValue}`;
         }
+        params.append(currentColumn, filterValue);
 
         const url = new URL('/api/filter', window.location.origin);
 
