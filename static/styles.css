@@ -21,6 +21,10 @@ button:hover {
     background-color: #005f99;
 }
 
+button.active {
+    background-color: #ff5722;
+}
+
 .tiles-container {
     display: flex;
     flex-direction: column;
@@ -93,6 +97,10 @@ button:hover {
 
 .filter-actions button:hover {
     background-color: #005f99;
+}
+
+.filter-actions button.active {
+    background-color: #ff5722; /* Highlight active "Not" button */
 }
 
 .close {
