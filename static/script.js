@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
         filterColumnValues();
     });
 
-    document.getElementById('selectAllButton').addEventListener('click', function() {
-        selectAllValues();
+    document.getElementById('deselectAllButton').addEventListener('click', function() {
+        deselectAllValues();
     });
 
     document.getElementById('applyFilterButton').addEventListener('click', function() {
@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('notButton').addEventListener('click', function() {
         toggleNotFilter();
+        filterColumnValues();
     });
 });
 
@@ -72,6 +73,7 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
+        checkbox.checked = true; // Select all by default
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -84,14 +86,20 @@ function createValueButtons(values) {
 
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
-    const filteredValues = currentValues.filter(value => value.toLowerCase().includes(keyword));
+    const filteredValues = currentValues.filter(value => {
+        if (isNotFilter) {
+            return !value.toLowerCase().includes(keyword) || value.toLowerCase().includes('desirable');
+        } else {
+            return value.toLowerCase().includes(keyword);
+        }
+    });
     createValueButtons(filteredValues);
 }
 
-function selectAllValues() {
+function deselectAllValues() {
     const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
     checkboxes.forEach(checkbox => {
-        checkbox.checked = true;
+        checkbox.checked = false;
     });
 }
 
