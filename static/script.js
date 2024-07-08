@@ -90,7 +90,7 @@ function filterColumnValues() {
         const lowerValue = value.toLowerCase();
         if (isNotFilter) {
             // Exclude values with "mandatory" and include "desirable" or those not mentioning the keyword
-            return !lowerValue.includes(keyword + ' mandatory') && (lowerValue.includes('desirable') || !lowerValue.includes(keyword));
+            return (!lowerValue.includes(keyword) || lowerValue.includes('desirable')) && !lowerValue.includes(keyword + ' mandatory');
         } else {
             return lowerValue.includes(keyword);
         }
