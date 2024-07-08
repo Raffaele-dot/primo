@@ -36,25 +36,25 @@ def filter_data():
             print(f"Applying filter for column: {column}")
             print(f"Filters: {filters}")
 
-            if filters[0].startswith('!'):
-                # Exclude filter logic
-                filters = [f[1:].strip() for f in filters]
-                print(f"Exclude filters: {filters}")
-                for filter_value in filters:
-                    filter_value_escaped = re.escape(filter_value)
-                    pattern = f"(?i){filter_value_escaped}"
-                    print(f"Excluding rows containing: {pattern}")
-                    filtered_df = filtered_df[~filtered_df[column].str.contains(pattern, na=False)]
-            else:
-                # Include filter logic
-                filters = [f.strip() for f in filters]
-                print(f"Include filters: {filters}")
+            exclude_filters = []
+            include_filters = []
+
+            for filter_value in filters:
+                filter_value = filter_value.strip()
+                if filter_value.startswith('!'):
+                    exclude_filters.append(re.escape(filter_value[1:]).lower())
+                else:
+                    include_filters.append(re.escape(filter_value).lower())
+
+            if exclude_filters:
+                print(f"Exclude filters: {exclude_filters}")
+                for pattern in exclude_filters:
+                    filtered_df = filtered_df[~filtered_df[column].str.lower().str.contains(pattern, na=False)]
+            if include_filters:
+                print(f"Include filters: {include_filters}")
                 include_mask = pd.Series([False] * len(filtered_df))
-                for filter_value in filters:
-                    filter_value_escaped = re.escape(filter_value)
-                    pattern = f"(?i){filter_value_escaped}"
-                    print(f"Including rows containing: {pattern}")
-                    include_mask = include_mask | filtered_df[column].str.contains(pattern, na=False)
+                for pattern in include_filters:
+                    include_mask |= filtered_df[column].str.lower().str.contains(pattern, na=False)
                 filtered_df = filtered_df[include_mask]
 
             print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
