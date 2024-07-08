@@ -38,7 +38,7 @@ def filter_data():
 
             if filters[0].startswith('!'):
                 # Exclude filter logic
-                filters = [f[1:] for f in filters]
+                filters = [f[1:].strip() for f in filters]
                 print(f"Exclude filters: {filters}")
                 for filter_value in filters:
                     filter_value_escaped = re.escape(filter_value)
@@ -46,6 +46,7 @@ def filter_data():
                     filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(filter_value_escaped, case=False, na=False)]
             else:
                 # Include filter logic
+                filters = [f.strip() for f in filters]
                 print(f"Include filters: {filters}")
                 include_mask = pd.Series([False] * len(filtered_df))
                 for filter_value in filters:
