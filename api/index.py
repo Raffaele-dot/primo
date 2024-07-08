@@ -40,16 +40,19 @@ def filter_data():
                 # Exclude filter logic
                 filters = [f[1:] for f in filters]
                 print(f"Exclude filters: {filters}")
-                regex_patterns = [re.escape(f) for f in filters]
-                regex_pattern = '|'.join(regex_patterns)
-                print(f"Exclude regex pattern: {regex_pattern}")
-                filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
+                for filter_value in filters:
+                    filter_value_escaped = re.escape(filter_value)
+                    print(f"Excluding rows containing: {filter_value_escaped}")
+                    filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(filter_value_escaped, case=False, na=False)]
             else:
                 # Include filter logic
-                regex_patterns = [re.escape(f) for f in filters]
-                regex_pattern = '|'.join(regex_patterns)
-                print(f"Include regex pattern: {regex_pattern}")
-                filtered_df = filtered_df[filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
+                print(f"Include filters: {filters}")
+                include_mask = pd.Series([False] * len(filtered_df))
+                for filter_value in filters:
+                    filter_value_escaped = re.escape(filter_value)
+                    print(f"Including rows containing: {filter_value_escaped}")
+                    include_mask = include_mask | filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(filter_value_escaped, case=False, na=False)
+                filtered_df = filtered_df[include_mask]
 
             print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
             print(filtered_df.head())
