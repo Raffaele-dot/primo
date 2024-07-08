@@ -42,8 +42,9 @@ def filter_data():
                 print(f"Exclude filters: {filters}")
                 for filter_value in filters:
                     filter_value_escaped = re.escape(filter_value)
-                    print(f"Excluding rows containing: {filter_value_escaped}")
-                    filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(filter_value_escaped, case=False, na=False)]
+                    pattern = f"(?i){filter_value_escaped}"
+                    print(f"Excluding rows containing: {pattern}")
+                    filtered_df = filtered_df[~filtered_df[column].str.contains(pattern, na=False)]
             else:
                 # Include filter logic
                 filters = [f.strip() for f in filters]
@@ -51,8 +52,9 @@ def filter_data():
                 include_mask = pd.Series([False] * len(filtered_df))
                 for filter_value in filters:
                     filter_value_escaped = re.escape(filter_value)
-                    print(f"Including rows containing: {filter_value_escaped}")
-                    include_mask = include_mask | filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(filter_value_escaped, case=False, na=False)
+                    pattern = f"(?i){filter_value_escaped}"
+                    print(f"Including rows containing: {pattern}")
+                    include_mask = include_mask | filtered_df[column].str.contains(pattern, na=False)
                 filtered_df = filtered_df[include_mask]
 
             print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
