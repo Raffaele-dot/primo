@@ -95,6 +95,8 @@ function filterColumnValues() {
             return lowerValue.includes(keyword);
         }
     });
+    console.log('Preview Filter - Keyword:', keyword, 'isNotFilter:', isNotFilter);
+    console.log('Preview Filter - Filtered Values:', filteredValues);
     createValueButtons(filteredValues);
 }
 
@@ -126,10 +128,12 @@ function applyMultipleFilters() {
 
         const url = new URL('/api/filter', window.location.origin);
 
+        console.log('Applying Filter - Params:', params.toString());
+
         fetch(`${url}?${params}`)
             .then(response => response.json())
             .then(data => {
-                console.log('Filtered Data:', data); // Log the filtered data
+                console.log('Applying Filter - Filtered Data:', data);
                 populateTiles(data);
             })
             .catch(error => console.error('Error applying filters:', error));
