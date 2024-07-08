@@ -5,13 +5,12 @@ import os
 app = Flask(__name__, static_folder='../static')
 
 # Load Excel data
-df = pd.read_excel(os.path.join(os.path.dirname(__file__), '../data.xlsx'))
+df = pd.read_excel('data.xlsx')
 
 # Endpoint to get columns
 @app.route('/api/columns', methods=['GET'])
 def get_columns():
     columns = df.columns.tolist()
-    print('Columns:', columns)
     return jsonify(columns)
 
 # Endpoint to get unique values for a column
@@ -20,7 +19,6 @@ def get_column_values():
     column = request.args.get('column')
     if column in df.columns:
         values = df[column].dropna().unique().tolist()
-        print(f'Values for {column}:', values)
         return jsonify(values)
     else:
         return jsonify([]), 400
@@ -34,18 +32,25 @@ def filter_data():
     for column, values in query_params.items():
         if column in df.columns:
             filters = values[0].split('|')
-            exclude = False
+            print(f"Applying filter for column: {column}")
+            print(f"Filters: {filters}")
+            
             if filters[0].startswith('!'):
-                exclude = True
+                # Exclude filter logic
                 filters = [f[1:] for f in filters]
-            regex_pattern = '|'.join(filters)
-            if exclude:
-                filtered_df = filtered_df[~filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
+                print(f"Exclude filters: {filters}")
+                regex_pattern = '|'.join(filters)
+                filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
             else:
-                filtered_df = filtered_df[filtered_df[column].astype(str).str.contains(regex_pattern, case=False, na=False)]
+                # Include filter logic
+                regex_pattern = '|'.join(filters)
+                print(f"Include filters: {filters}")
+                filtered_df = filtered_df[filtered_df[column].str.lower().str.replace(':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
+            
+            print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
+            print(filtered_df.head())
 
     data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
-    print('Filtered data:', data)
     return jsonify(data)
 
 # Serve index.html
