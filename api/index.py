@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request, send_from_directory
 import pandas as pd
 import os
-import re
 
 app = Flask(__name__, static_folder='../static')
 
@@ -42,19 +41,20 @@ def filter_data():
             for filter_value in filters:
                 filter_value = filter_value.strip()
                 if filter_value.startswith('!'):
-                    exclude_filters.append(re.escape(filter_value[1:]).lower())
+                    exclude_filters.append(filter_value[1:].lower())
                 else:
-                    include_filters.append(re.escape(filter_value).lower())
+                    include_filters.append(filter_value.lower())
 
             if exclude_filters:
                 print(f"Exclude filters: {exclude_filters}")
-                for pattern in exclude_filters:
-                    filtered_df = filtered_df[~filtered_df[column].str.lower().str.contains(pattern, na=False)]
+                for filter_value in exclude_filters:
+                    filtered_df = filtered_df[~filtered_df[column].str.lower().str.contains(filter_value, na=False)]
+            
             if include_filters:
                 print(f"Include filters: {include_filters}")
                 include_mask = pd.Series([False] * len(filtered_df))
-                for pattern in include_filters:
-                    include_mask |= filtered_df[column].str.lower().str.contains(pattern, na=False)
+                for filter_value in include_filters:
+                    include_mask |= filtered_df[column].str.lower().str.contains(filter_value, na=False)
                 filtered_df = filtered_df[include_mask]
 
             print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
