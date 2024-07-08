@@ -85,11 +85,11 @@ function createValueButtons(values) {
 }
 
 function filterColumnValues() {
-    const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
+    const keyword = document.getElementById('keywordInput').value.trim().toLowerCase().replace(/:\s*/g, ' ');
     const filteredValues = currentValues.filter(value => {
-        const lowerValue = value.toLowerCase();
+        const lowerValue = value.toLowerCase().replace(/:\s*/g, ' ');
         if (isNotFilter) {
-            // Exclude values containing the keyword in any combination
+            // Exclude values containing the keyword
             return !lowerValue.includes(keyword);
         } else {
             return lowerValue.includes(keyword);
@@ -118,7 +118,7 @@ function applyMultipleFilters() {
 
     if (selectedValues.length > 0) {
         const params = new URLSearchParams();
-        let filterValue = selectedValues.join('|');
+        let filterValue = selectedValues.join('|').toLowerCase().replace(/:\s*/g, ' ');
         if (isNotFilter) {
             filterValue = `!${filterValue}`;
         }
