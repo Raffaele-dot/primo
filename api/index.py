@@ -40,12 +40,12 @@ def filter_data():
                 filters = [f[1:] for f in filters]
                 print(f"Exclude filters: {filters}")
                 regex_pattern = '|'.join(filters)
-                filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
+                filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
             else:
                 # Include filter logic
                 regex_pattern = '|'.join(filters)
                 print(f"Include filters: {filters}")
-                filtered_df = filtered_df[filtered_df[column].str.lower().str.replace(':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
+                filtered_df = filtered_df[filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
             
             print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
             print(filtered_df.head())
