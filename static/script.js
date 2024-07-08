@@ -87,10 +87,11 @@ function createValueButtons(values) {
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
+        const lowerValue = value.toLowerCase();
         if (isNotFilter) {
-            return !value.toLowerCase().includes(keyword) || value.toLowerCase().includes('desirable');
+            return !lowerValue.includes(keyword) || lowerValue.includes('desirable');
         } else {
-            return value.toLowerCase().includes(keyword);
+            return lowerValue.includes(keyword);
         }
     });
     createValueButtons(filteredValues);
