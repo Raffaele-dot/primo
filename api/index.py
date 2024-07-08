@@ -35,15 +35,8 @@ def filter_data():
             print(f"Applying filter for column: {column}")
             print(f"Filters: {filters}")
 
-            exclude_filters = []
-            include_filters = []
-
-            for filter_value in filters:
-                filter_value = filter_value.strip()
-                if filter_value.startswith('!'):
-                    exclude_filters.append(filter_value[1:].lower())
-                else:
-                    include_filters.append(filter_value.lower())
+            exclude_filters = [f[1:].strip().lower() for f in filters if f.startswith('!')]
+            include_filters = [f.strip().lower() for f in filters if not f.startswith('!')]
 
             if exclude_filters:
                 print(f"Exclude filters: {exclude_filters}")
