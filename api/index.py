@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, send_from_directory
 import pandas as pd
 import os
+import re
 
 app = Flask(__name__, static_folder='../static')
 
@@ -34,19 +35,22 @@ def filter_data():
             filters = values[0].split('|')
             print(f"Applying filter for column: {column}")
             print(f"Filters: {filters}")
-            
+
             if filters[0].startswith('!'):
                 # Exclude filter logic
                 filters = [f[1:] for f in filters]
                 print(f"Exclude filters: {filters}")
-                regex_pattern = '|'.join(filters)
+                regex_patterns = [re.escape(f) for f in filters]
+                regex_pattern = '|'.join(regex_patterns)
+                print(f"Exclude regex pattern: {regex_pattern}")
                 filtered_df = filtered_df[~filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
             else:
                 # Include filter logic
-                regex_pattern = '|'.join(filters)
-                print(f"Include filters: {filters}")
+                regex_patterns = [re.escape(f) for f in filters]
+                regex_pattern = '|'.join(regex_patterns)
+                print(f"Include regex pattern: {regex_pattern}")
                 filtered_df = filtered_df[filtered_df[column].str.lower().str.replace(r':\s*', ' ').str.contains(regex_pattern, case=False, na=False)]
-            
+
             print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
             print(filtered_df.head())
 
