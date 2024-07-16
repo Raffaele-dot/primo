@@ -172,36 +172,4 @@ function populateTiles(data) {
                     } else if (cellContent.length > 500) {
                         cellContent = cellContent.substring(0, 500) + ' ...[]';
                     }
-                    text.innerHTML = cellContent;
-                    tile.appendChild(text);
-                }
-            });
-
-            container.appendChild(tile);
-        });
-    }
-}
-
-function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.style.display = 'block';
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.style.display = 'none';
-}
-
-document.querySelectorAll('.modal .close').forEach(closeButton => {
-    closeButton.addEventListener('click', function() {
-        closeModal(this.closest('.modal').id);
-    });
-});
-
-window.addEventListener('click', function(event) {
-    document.querySelectorAll('.modal').forEach(modal => {
-        if (event.target == modal) {
-            modal.style.display = 'none';
-        }
-    });
-});
+                    text.innerHTML =
