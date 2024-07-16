@@ -5,7 +5,7 @@ import os
 app = Flask(__name__, static_folder='../static')
 
 # Load Excel data
-df = pd.read_excel('/mnt/data/data (4).xlsx')
+df = pd.read_excel('/data.xlsx')
 
 # Endpoint to get columns
 @app.route('/api/columns', methods=['GET'])
