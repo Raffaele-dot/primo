@@ -89,7 +89,6 @@ function filterColumnValues() {
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase().replace(/:\s*/g, ' ');
         if (isNotFilter) {
-            // Exclude values containing the keyword
             return !lowerValue.includes(keyword);
         } else {
             return lowerValue.includes(keyword);
@@ -211,3 +210,4 @@ window.addEventListener('click', function(event) {
         }
     });
 });
+       
