@@ -163,8 +163,6 @@ function populateTiles(data) {
                 if (column === 'title') {
                     const title = document.createElement('h3');
                     title.innerText = row[column];
-                    title.style.color = '#007acc'; // Blue color for Visual Studio Code style
-                    title.style.fontWeight = 'bold';
                     tile.appendChild(title);
                 } else {
                     const text = document.createElement('p');
