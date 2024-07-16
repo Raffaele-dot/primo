@@ -163,6 +163,8 @@ function populateTiles(data) {
                 if (column === 'title') {
                     const title = document.createElement('h3');
                     title.innerText = row[column];
+                    title.style.color = '#007acc'; // Blue color for Visual Studio Code style
+                    title.style.fontWeight = 'bold';
                     tile.appendChild(title);
                 } else {
                     const text = document.createElement('p');
@@ -172,4 +174,36 @@ function populateTiles(data) {
                     } else if (cellContent.length > 500) {
                         cellContent = cellContent.substring(0, 500) + ' ...[]';
                     }
-                    text.innerHTML =
+                    text.innerHTML = cellContent;
+                    tile.appendChild(text);
+                }
+            });
+
+            container.appendChild(tile);
+        });
+    }
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+}
+
+document.querySelectorAll('.modal .close').forEach(closeButton => {
+    closeButton.addEventListener('click', function() {
+        closeModal(this.closest('.modal').id);
+    });
+});
+
+window.addEventListener('click', function(event) {
+    document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
