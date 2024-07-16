@@ -119,18 +119,24 @@ function applyMultipleFilters() {
                                 .map(checkbox => checkbox.value);
 
     if (selectedValues.length > 0) {
-        const params = new URLSearchParams();
+        const params = {};
         let filterValue = selectedValues.join('|').toLowerCase().replace(/:\s*/g, ' ');
         if (isNotFilter) {
             filterValue = `!${filterValue}`;
         }
-        params.append(currentColumn, filterValue);
+        params[currentColumn] = filterValue;
 
         const url = new URL('/api/filter', window.location.origin);
 
-        console.log('Applying Filter - Params:', params.toString());
+        console.log('Applying Filter - Params:', params);
 
-        fetch(`${url}?${params}`)
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(params)
+        })
             .then(response => response.json())
             .then(data => {
                 console.log('Applying Filter - Filtered Data:', data);
