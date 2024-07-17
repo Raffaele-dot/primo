@@ -6,7 +6,10 @@ app = Flask(__name__, static_folder='static')
 
 # Load Excel data
 file_path = os.path.join(app.static_folder, 'data.xlsx')
-df = pd.read_excel(file_path)
+if os.path.exists(file_path):
+    df = pd.read_excel(file_path)
+else:
+    df = pd.DataFrame()  # create an empty DataFrame if the file does not exist
 
 # Endpoint to get columns
 @app.route('/api/columns', methods=['GET'])
