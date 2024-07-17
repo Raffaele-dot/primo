@@ -1,114 +1,207 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const openFilterModalButton = document.getElementById("openFilterModal");
-    const filterModal = document.getElementById("filterModal");
-    const valueModal = document.getElementById("valueModal");
-    const columnContainer = document.getElementById("columnContainer");
-    const valueContainer = document.getElementById("valueContainer");
-    const keywordInput = document.getElementById("keywordInput");
-    const deselectAllButton = document.getElementById("deselectAllButton");
-    const notButton = document.getElementById("notButton");
-    const applyFilterButton = document.getElementById("applyFilterButton");
-    const tilesContainer = document.getElementById("tiles-container");
-    let selectedColumn = '';
-    let selectedValues = [];
+document.addEventListener('DOMContentLoaded', function() {
+    fetchColumns();
 
-    openFilterModalButton.addEventListener("click", async function () {
-        filterModal.style.display = "block";
-        columnContainer.innerHTML = '';
-
-        const response = await fetch('/api/columns');
-        const columns = await response.json();
-
-        columns.forEach(column => {
-            const button = document.createElement('button');
-            button.textContent = column;
-            button.addEventListener('click', () => selectColumn(column));
-            columnContainer.appendChild(button);
-        });
+    document.getElementById('openFilterModal').addEventListener('click', function() {
+        openModal('filterModal');
     });
 
-    document.querySelectorAll('.close').forEach(span => {
-        span.addEventListener('click', () => {
-            filterModal.style.display = "none";
-            valueModal.style.display = "none";
-        });
+    document.getElementById('keywordInput').addEventListener('input', function() {
+        filterColumnValues();
     });
 
-    deselectAllButton.addEventListener('click', () => {
-        selectedValues = [];
-        valueContainer.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-            checkbox.checked = false;
-        });
+    document.getElementById('deselectAllButton').addEventListener('click', function() {
+        deselectAllValues();
     });
 
-    notButton.addEventListener('click', () => {
-        valueModal.dataset.include = valueModal.dataset.include === 'true' ? 'false' : 'true';
-        notButton.textContent = valueModal.dataset.include === 'true' ? 'Include' : 'Exclude';
+    document.getElementById('applyFilterButton').addEventListener('click', function() {
+        applyMultipleFilters();
+        closeModal('valueModal');
     });
 
-    applyFilterButton.addEventListener('click', applyFilter);
+    document.getElementById('notButton').addEventListener('click', function() {
+        toggleNotFilter();
+        filterColumnValues();
+    });
+});
 
-    async function selectColumn(column) {
-        selectedColumn = column;
-        filterModal.style.display = "none";
-        valueModal.style.display = "block";
-        valueContainer.innerHTML = '';
-        valueModal.dataset.include = 'true';
-        notButton.textContent = 'Include';
+let columns = [];
+let currentColumn = '';
+let currentValues = [];
+let isNotFilter = false;
 
-        const response = await fetch(`/api/column_values?column=${column}`);
-        const values = await response.json();
-
-        values.forEach(value => {
-            const div = document.createElement('div');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = value;
-            div.appendChild(checkbox);
-            div.appendChild(document.createTextNode(value));
-            valueContainer.appendChild(div);
-        });
-    }
-
-    function applyFilter() {
-        selectedValues = [];
-        valueContainer.querySelectorAll('input[type="checkbox"]:checked').forEach(checkbox => {
-            selectedValues.push(checkbox.value);
-        });
-
-        const queryParams = {};
-        queryParams[selectedColumn] = selectedValues.map(value => {
-            return valueModal.dataset.include === 'true' ? value : `!${value}`;
-        }).join('|');
-
-        fetch('/api/filter', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(queryParams)
-        })
+function fetchColumns() {
+    fetch('/api/columns')
         .then(response => response.json())
-        .then(data => populateTiles(data))
-        .catch(error => console.error('Error applying filters:', error));
+        .then(fetchedColumns => {
+            columns = fetchedColumns;
+            createColumnButtons(columns);
+        })
+        .catch(error => console.error('Error fetching columns:', error));
+}
 
-        valueModal.style.display = "none";
+function createColumnButtons(columns) {
+    const columnContainer = document.getElementById('columnContainer');
+    columnContainer.innerHTML = ''; // Clear existing buttons
+    columns.forEach(column => {
+        const button = document.createElement('button');
+        button.innerText = column;
+        button.addEventListener('click', function() {
+            currentColumn = column;
+            fetchColumnValues(column);
+            closeModal('filterModal');
+            openModal('valueModal');
+        });
+        columnContainer.appendChild(button);
+    });
+}
+
+function fetchColumnValues(column) {
+    fetch(`/api/column_values?column=${column}`)
+        .then(response => response.json())
+        .then(values => {
+            currentValues = values;
+            createValueButtons(values);
+        })
+        .catch(error => console.error('Error fetching column values:', error));
+}
+
+function createValueButtons(values) {
+    const valueContainer = document.getElementById('valueContainer');
+    valueContainer.innerHTML = ''; // Clear existing buttons
+    values.forEach(value => {
+        const div = document.createElement('div');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = value;
+        checkbox.checked = true; // Select all by default
+        div.appendChild(checkbox);
+
+        const label = document.createElement('label');
+        label.innerText = value;
+        div.appendChild(label);
+
+        valueContainer.appendChild(div);
+    });
+}
+
+function filterColumnValues() {
+    const keyword = document.getElementById('keywordInput').value.trim().toLowerCase().replace(/:\s*/g, ' ');
+    const filteredValues = currentValues.filter(value => {
+        const lowerValue = value.toLowerCase().replace(/:\s*/g, ' ');
+        if (isNotFilter) {
+            // Exclude values containing the keyword
+            return !lowerValue.includes(keyword);
+        } else {
+            return lowerValue.includes(keyword);
+        }
+    });
+    console.log('Preview Filter - Keyword:', keyword, 'isNotFilter:', isNotFilter);
+    console.log('Preview Filter - Filtered Values:', filteredValues);
+    createValueButtons(filteredValues);
+}
+
+function deselectAllValues() {
+    const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+function toggleNotFilter() {
+    isNotFilter = !isNotFilter;
+    const notButton = document.getElementById('notButton');
+    notButton.classList.toggle('active', isNotFilter);
+    notButton.innerText = isNotFilter ? 'Not' : 'Include';
+}
+
+function applyMultipleFilters() {
+    const selectedValues = Array.from(document.querySelectorAll('#valueContainer input[type="checkbox"]:checked'))
+                                .map(checkbox => checkbox.value);
+
+    if (selectedValues.length > 0) {
+        const params = new URLSearchParams();
+        let filterValue = selectedValues.join('|').toLowerCase().replace(/:\s*/g, ' ');
+        if (isNotFilter) {
+            filterValue = `!${filterValue}`;
+        }
+        params.append(currentColumn, filterValue);
+
+        const url = new URL('/api/filter', window.location.origin);
+
+        console.log('Applying Filter - Params:', params.toString());
+
+        fetch(`${url}?${params}`)
+            .then(response => response.json())
+            .then(data => {
+                console.log('Applying Filter - Filtered Data:', data);
+                populateTiles(data);
+            })
+            .catch(error => console.error('Error applying filters:', error));
+    }
+}
+
+function populateTiles(data) {
+    const container = document.getElementById('tiles-container');
+    if (!container) {
+        console.error('Could not find tiles-container element');
+        return;
     }
 
-    function populateTiles(data) {
-        tilesContainer.innerHTML = '';
+    container.innerHTML = ''; // Clear existing tiles
 
-        data.forEach(item => {
+    if (data.length === 0) {
+        const message = document.createElement('div');
+        message.innerText = 'No data found';
+        container.appendChild(message);
+    } else {
+        data.forEach(row => {
             const tile = document.createElement('div');
             tile.className = 'tile';
 
-            Object.keys(item).forEach(key => {
-                const element = document.createElement('p');
-                element.textContent = `${key}: ${item[key]}`;
-                tile.appendChild(element);
+            columns.forEach(column => {
+                const content = document.createElement('div');
+                if (column === 'title') {
+                    const title = document.createElement('h3');
+                    title.innerText = row[column];
+                    tile.appendChild(title);
+                } else {
+                    const text = document.createElement('p');
+                    let cellContent = row[column] !== null ? row[column].toString() : '';
+                    if (column === 'Linkedin_URL' && cellContent) {
+                        cellContent = `<a href="${cellContent}" target="_blank">Go to the page</a>`;
+                    } else if (cellContent.length > 500) {
+                        cellContent = cellContent.substring(0, 500) + ' ...[]';
+                    }
+                    text.innerHTML = cellContent;
+                    tile.appendChild(text);
+                }
             });
 
-            tilesContainer.appendChild(tile);
+            container.appendChild(tile);
         });
     }
+}
+
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'block';
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.style.display = 'none';
+}
+
+document.querySelectorAll('.modal .close').forEach(closeButton => {
+    closeButton.addEventListener('click', function() {
+        closeModal(this.closest('.modal').id);
+    });
+});
+
+window.addEventListener('click', function(event) {
+    document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
 });
