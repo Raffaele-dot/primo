@@ -2,7 +2,7 @@ from flask import Flask, jsonify, request, send_from_directory
 import pandas as pd
 import os
 
-app = Flask(__name__, static_folder='static')
+app = Flask(__name__, static_folder='../static')
 
 # Load Excel data
 file_path = os.path.join(app.static_folder, 'data.xlsx')
