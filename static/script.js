@@ -89,14 +89,11 @@ function filterColumnValues() {
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase().replace(/:\s*/g, ' ');
         if (isNotFilter) {
-            // Exclude values containing the keyword
             return !lowerValue.includes(keyword);
         } else {
             return lowerValue.includes(keyword);
         }
     });
-    console.log('Preview Filter - Keyword:', keyword, 'isNotFilter:', isNotFilter);
-    console.log('Preview Filter - Filtered Values:', filteredValues);
     createValueButtons(filteredValues);
 }
 
@@ -128,12 +125,9 @@ function applyMultipleFilters() {
 
         const url = new URL('/api/filter', window.location.origin);
 
-        console.log('Applying Filter - Params:', params.toString());
-
         fetch(`${url}?${params}`)
             .then(response => response.json())
             .then(data => {
-                console.log('Applying Filter - Filtered Data:', data);
                 populateTiles(data);
             })
             .catch(error => console.error('Error applying filters:', error));
@@ -142,11 +136,6 @@ function applyMultipleFilters() {
 
 function populateTiles(data) {
     const container = document.getElementById('tiles-container');
-    if (!container) {
-        console.error('Could not find tiles-container element');
-        return;
-    }
-
     container.innerHTML = ''; // Clear existing tiles
 
     if (data.length === 0) {
