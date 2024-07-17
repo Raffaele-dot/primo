@@ -1,4 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
+    // Ensure the filter button exists
+    const applyFiltersButton = document.getElementById('apply-filters');
+    if (!applyFiltersButton) {
+        console.error('The apply-filters button was not found.');
+        return;
+    }
+
     // Apply filters and populate the results
     async function applyMultipleFilters() {
         const queryParams = {};
@@ -37,6 +44,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to populate tiles with filtered data
     function populateTiles(data) {
         const tilesContainer = document.getElementById('tiles');
+        if (!tilesContainer) {
+            console.error('The tiles container was not found.');
+            return;
+        }
+
         tilesContainer.innerHTML = '';
 
         data.forEach(item => {
@@ -57,5 +69,5 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Attach event listener to the filter apply button
-    document.getElementById('apply-filters').addEventListener('click', applyMultipleFilters);
+    applyFiltersButton.addEventListener('click', applyMultipleFilters);
 });
