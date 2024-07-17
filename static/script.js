@@ -98,11 +98,14 @@ function filterColumnValues() {
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
         if (isNotFilter) {
+            // Exclude values containing the keyword
             return !lowerValue.includes(keyword);
         } else {
             return lowerValue.includes(keyword);
         }
     });
+    console.log('Preview Filter - Keyword:', keyword, 'isNotFilter:', isNotFilter);
+    console.log('Preview Filter - Filtered Values:', filteredValues);
     createValueButtons(filteredValues);
 }
 
@@ -137,6 +140,11 @@ function applyFilters() {
 
 function populateTiles(data) {
     const container = document.getElementById('tiles-container');
+    if (!container) {
+        console.error('Could not find tiles-container element');
+        return;
+    }
+
     container.innerHTML = ''; // Clear existing tiles
 
     if (data.length === 0) {
