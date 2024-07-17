@@ -48,6 +48,12 @@ def filter_data():
     data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
     return jsonify(data)
 
+# Endpoint to get entire data
+@app.route('/api/data', methods=['GET'])
+def get_data():
+    data = df.replace({pd.NA: None}).to_dict(orient='records')
+    return jsonify(data)
+
 # Serve index.html
 @app.route('/')
 def index():
