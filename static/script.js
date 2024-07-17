@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     fetchColumns();
+    fetchData();
 
     document.getElementById('openFilterModal').addEventListener('click', function() {
         openModal('filterModal');
@@ -14,7 +15,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('applyFilterButton').addEventListener('click', function() {
-        applyMultipleFilters();
+        applyFilters();
         closeModal('valueModal');
     });
 
@@ -25,6 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 let columns = [];
+let data = [];
+let filteredData = [];
 let currentColumn = '';
 let currentValues = [];
 let isNotFilter = false;
@@ -37,6 +40,17 @@ function fetchColumns() {
             createColumnButtons(columns);
         })
         .catch(error => console.error('Error fetching columns:', error));
+}
+
+function fetchData() {
+    fetch('/api/data')
+        .then(response => response.json())
+        .then(fetchedData => {
+            data = fetchedData;
+            filteredData = fetchedData;
+            populateTiles(fetchedData);
+        })
+        .catch(error => console.error('Error fetching data:', error));
 }
 
 function createColumnButtons(columns) {
@@ -56,13 +70,8 @@ function createColumnButtons(columns) {
 }
 
 function fetchColumnValues(column) {
-    fetch(`/api/column_values?column=${column}`)
-        .then(response => response.json())
-        .then(values => {
-            currentValues = values;
-            createValueButtons(values);
-        })
-        .catch(error => console.error('Error fetching column values:', error));
+    currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
+    createValueButtons(currentValues);
 }
 
 function createValueButtons(values) {
@@ -85,9 +94,9 @@ function createValueButtons(values) {
 }
 
 function filterColumnValues() {
-    const keyword = document.getElementById('keywordInput').value.trim().toLowerCase().replace(/:\s*/g, ' ');
+    const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
-        const lowerValue = value.toLowerCase().replace(/:\s*/g, ' ');
+        const lowerValue = value.toLowerCase();
         if (isNotFilter) {
             return !lowerValue.includes(keyword);
         } else {
@@ -111,27 +120,19 @@ function toggleNotFilter() {
     notButton.innerText = isNotFilter ? 'Not' : 'Include';
 }
 
-function applyMultipleFilters() {
+function applyFilters() {
     const selectedValues = Array.from(document.querySelectorAll('#valueContainer input[type="checkbox"]:checked'))
-                                .map(checkbox => checkbox.value);
+                                .map(checkbox => checkbox.value.toLowerCase());
 
-    if (selectedValues.length > 0) {
-        const params = new URLSearchParams();
-        let filterValue = selectedValues.join('|').toLowerCase().replace(/:\s*/g, ' ');
+    filteredData = data.filter(row => {
+        const cellValue = row[currentColumn]?.toLowerCase();
         if (isNotFilter) {
-            filterValue = `!${filterValue}`;
+            return !selectedValues.includes(cellValue);
+        } else {
+            return selectedValues.includes(cellValue);
         }
-        params.append(currentColumn, filterValue);
-
-        const url = new URL('/api/filter', window.location.origin);
-
-        fetch(`${url}?${params}`)
-            .then(response => response.json())
-            .then(data => {
-                populateTiles(data);
-            })
-            .catch(error => console.error('Error applying filters:', error));
-    }
+    });
+    populateTiles(filteredData);
 }
 
 function populateTiles(data) {
@@ -149,7 +150,7 @@ function populateTiles(data) {
 
             columns.forEach(column => {
                 const content = document.createElement('div');
-                if (column === 'title') {
+                if (column === 'Title') {
                     const title = document.createElement('h3');
                     title.innerText = row[column];
                     tile.appendChild(title);
