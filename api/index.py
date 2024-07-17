@@ -5,11 +5,7 @@ import os
 app = Flask(__name__, static_folder='../static')
 
 # Load Excel data
-file_path = os.path.join(app.static_folder, 'data.xlsx')
-if os.path.exists(file_path):
-    df = pd.read_excel(file_path)
-else:
-    df = pd.DataFrame()  # create an empty DataFrame if the file does not exist
+df = pd.read_excel('data.xlsx')
 
 # Endpoint to get columns
 @app.route('/api/columns', methods=['GET'])
@@ -28,32 +24,34 @@ def get_column_values():
         return jsonify([]), 400
 
 # Endpoint to get filtered data
-@app.route('/api/filter', methods=['POST'])
+@app.route('/api/filter', methods=['GET'])
 def filter_data():
-    query_params = request.json
+    query_params = request.args.to_dict(flat=False)
     filtered_df = df.copy()
 
     for column, values in query_params.items():
         if column in df.columns:
-            filters = values.split('|')
+            filters = values[0].split('|')
+            print(f"Applying filter for column: {column}")
+            print(f"Filters: {filters}")
+
             exclude_filters = [f[1:].strip().lower() for f in filters if f.startswith('!')]
             include_filters = [f.strip().lower() for f in filters if not f.startswith('!')]
 
             if exclude_filters:
+                print(f"Exclude filters: {exclude_filters}")
                 for filter_value in exclude_filters:
-                    try:
-                        filtered_df = filtered_df[~filtered_df[column].str.lower().str.contains(filter_value, na=False, regex=True)]
-                    except Exception as e:
-                        print(f"Error applying exclude filter '{filter_value}': {e}")
-
+                    filtered_df = filtered_df[~filtered_df[column].str.lower().str.contains(filter_value, na=False)]
+            
             if include_filters:
+                print(f"Include filters: {include_filters}")
                 include_mask = pd.Series([False] * len(filtered_df))
                 for filter_value in include_filters:
-                    try:
-                        include_mask |= filtered_df[column].str.lower().str.contains(filter_value, na=False, regex=True)
-                    except Exception as e:
-                        print(f"Error applying include filter '{filter_value}': {e}")
+                    include_mask |= filtered_df[column].str.lower().str.contains(filter_value, na=False)
                 filtered_df = filtered_df[include_mask]
+
+            print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
+            print(filtered_df.head())
 
     data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
     return jsonify(data)
