@@ -32,26 +32,18 @@ def filter_data():
     for column, values in query_params.items():
         if column in df.columns:
             filters = values[0].split('|')
-            print(f"Applying filter for column: {column}")
-            print(f"Filters: {filters}")
-
             exclude_filters = [f[1:].strip().lower() for f in filters if f.startswith('!')]
             include_filters = [f.strip().lower() for f in filters if not f.startswith('!')]
 
             if exclude_filters:
-                print(f"Exclude filters: {exclude_filters}")
                 for filter_value in exclude_filters:
                     filtered_df = filtered_df[~filtered_df[column].str.lower().str.contains(filter_value, na=False)]
             
             if include_filters:
-                print(f"Include filters: {include_filters}")
                 include_mask = pd.Series([False] * len(filtered_df))
                 for filter_value in include_filters:
                     include_mask |= filtered_df[column].str.lower().str.contains(filter_value, na=False)
                 filtered_df = filtered_df[include_mask]
-
-            print(f"Filtered DataFrame (rows count): {len(filtered_df)}")
-            print(filtered_df.head())
 
     data = filtered_df.replace({pd.NA: None}).to_dict(orient='records')
     return jsonify(data)
