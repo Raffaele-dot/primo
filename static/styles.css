@@ -4,6 +4,8 @@ body {
     color: #d4d4d4;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
 }
 
 button {
@@ -28,12 +30,16 @@ button.active {
 .tiles-container {
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 10px;
+    width: 100%;
+    max-width: 600px; /* Maximum width for desktop */
 }
 
 .tile-wrapper {
     position: relative;
     margin: 10px 0;
+    width: 100%;
 }
 
 .background-tile {
@@ -72,7 +78,7 @@ button.active {
     border: 1px solid #333;
     border-radius: 5px;
     padding: 15px;
-    width: calc(100% - 30px); /* Full width minus padding */
+    width: 100%;
     box-sizing: border-box;
     color: #d4d4d4;
     z-index: 2;
