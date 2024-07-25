@@ -153,6 +153,23 @@ function populateTiles(data) {
         container.appendChild(message);
     } else {
         data.forEach(row => {
+            const tileWrapper = document.createElement('div');
+            tileWrapper.className = 'tile-wrapper';
+
+            const backgroundTile = document.createElement('div');
+            backgroundTile.className = 'background-tile';
+
+            const applyDiv = document.createElement('div');
+            applyDiv.className = 'apply';
+            applyDiv.innerText = 'Apply';
+
+            const trashDiv = document.createElement('div');
+            trashDiv.className = 'trash';
+            trashDiv.innerText = 'Trash it';
+
+            backgroundTile.appendChild(applyDiv);
+            backgroundTile.appendChild(trashDiv);
+
             const tile = document.createElement('div');
             tile.className = 'tile';
             tile.dataset.link = row['Linkedin_URL'];
@@ -176,14 +193,16 @@ function populateTiles(data) {
                 }
             });
 
-            addSwipeListeners(tile);
+            addSwipeListeners(tile, tileWrapper);
 
-            container.appendChild(tile);
+            tileWrapper.appendChild(backgroundTile);
+            tileWrapper.appendChild(tile);
+            container.appendChild(tileWrapper);
         });
     }
 }
 
-function addSwipeListeners(tile) {
+function addSwipeListeners(tile, tileWrapper) {
     let startX = 0;
     let startY = 0;
     let isSwiping = false;
@@ -202,6 +221,7 @@ function addSwipeListeners(tile) {
 
         if (Math.abs(diffX) > Math.abs(diffY)) {
             event.preventDefault(); // Prevent vertical scrolling
+            tile.style.transform = `translateX(${diffX}px)`;
         }
     });
 
@@ -211,7 +231,7 @@ function addSwipeListeners(tile) {
 
         const diffX = event.changedTouches[0].clientX - startX;
 
-        if (Math.abs(diffX) > 50) { // Swipe threshold
+        if (Math.abs(diffX) > tileWrapper.offsetWidth / 2) {
             if (diffX > 0) {
                 // Swipe right
                 const link = tile.dataset.link;
@@ -220,8 +240,11 @@ function addSwipeListeners(tile) {
                 }
             } else {
                 // Swipe left
-                tile.style.display = 'none';
+                tileWrapper.style.display = 'none';
             }
+        } else {
+            // Reset position if swipe not far enough
+            tile.style.transform = 'translateX(0)';
         }
     });
 }
