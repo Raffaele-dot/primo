@@ -221,7 +221,10 @@ function addSwipeListeners(tile, tileWrapper) {
 
         if (Math.abs(diffX) > Math.abs(diffY)) {
             event.preventDefault(); // Prevent vertical scrolling
-            tile.style.transform = `translateX(${diffX}px)`;
+            const maxTranslate = tileWrapper.offsetWidth * 0.5;
+            if (Math.abs(diffX) <= maxTranslate) {
+                tile.style.transform = `translateX(${diffX}px)`;
+            }
         }
     });
 
@@ -230,8 +233,9 @@ function addSwipeListeners(tile, tileWrapper) {
         isSwiping = false;
 
         const diffX = event.changedTouches[0].clientX - startX;
+        const maxTranslate = tileWrapper.offsetWidth * 0.5;
 
-        if (Math.abs(diffX) > tileWrapper.offsetWidth / 2) {
+        if (Math.abs(diffX) >= maxTranslate) {
             if (diffX > 0) {
                 // Swipe right
                 const link = tile.dataset.link;
