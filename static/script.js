@@ -155,15 +155,14 @@ function populateTiles(data) {
         data.forEach(row => {
             const tile = document.createElement('div');
             tile.className = 'tile';
-
-            const tileContent = document.createElement('div');
-            tileContent.className = 'tile-content';
+            tile.dataset.link = row['Linkedin_URL'];
 
             columns.forEach(column => {
+                const content = document.createElement('div');
                 if (column === 'Title') {
                     const title = document.createElement('h3');
                     title.innerText = row[column];
-                    tileContent.appendChild(title);
+                    tile.appendChild(title);
                 } else {
                     const text = document.createElement('p');
                     let cellContent = row[column] !== null ? row[column].toString() : '';
@@ -173,28 +172,58 @@ function populateTiles(data) {
                         cellContent = cellContent.substring(0, 500) + ' ...[]';
                     }
                     text.innerHTML = cellContent;
-                    tileContent.appendChild(text);
+                    tile.appendChild(text);
                 }
             });
 
-            const goToPage = document.createElement('div');
-            goToPage.className = 'go-to-page';
-            if (row['Linkedin_URL']) {
-                goToPage.innerHTML = `<a href="${row['Linkedin_URL']}" target="_blank">Go to the page</a>`;
-            }
-
-            tile.appendChild(tileContent);
-            tile.appendChild(goToPage);
-
-            tile.addEventListener('scroll', function(event) {
-                if (event.target.scrollLeft === 0) {
-                    container.removeChild(tile);
-                }
-            });
+            addSwipeListeners(tile);
 
             container.appendChild(tile);
         });
     }
+}
+
+function addSwipeListeners(tile) {
+    let startX = 0;
+    let startY = 0;
+    let isSwiping = false;
+
+    tile.addEventListener('touchstart', function(event) {
+        startX = event.touches[0].clientX;
+        startY = event.touches[0].clientY;
+        isSwiping = true;
+    });
+
+    tile.addEventListener('touchmove', function(event) {
+        if (!isSwiping) return;
+
+        const diffX = event.touches[0].clientX - startX;
+        const diffY = event.touches[0].clientY - startY;
+
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+            event.preventDefault(); // Prevent vertical scrolling
+        }
+    });
+
+    tile.addEventListener('touchend', function(event) {
+        if (!isSwiping) return;
+        isSwiping = false;
+
+        const diffX = event.changedTouches[0].clientX - startX;
+
+        if (Math.abs(diffX) > 50) { // Swipe threshold
+            if (diffX > 0) {
+                // Swipe right
+                const link = tile.dataset.link;
+                if (link) {
+                    window.open(link, '_blank');
+                }
+            } else {
+                // Swipe left
+                tile.style.display = 'none';
+            }
+        }
+    });
 }
 
 function openModal(modalId) {
