@@ -156,12 +156,14 @@ function populateTiles(data) {
             const tile = document.createElement('div');
             tile.className = 'tile';
 
+            const tileContent = document.createElement('div');
+            tileContent.className = 'tile-content';
+
             columns.forEach(column => {
-                const content = document.createElement('div');
                 if (column === 'Title') {
                     const title = document.createElement('h3');
                     title.innerText = row[column];
-                    tile.appendChild(title);
+                    tileContent.appendChild(title);
                 } else {
                     const text = document.createElement('p');
                     let cellContent = row[column] !== null ? row[column].toString() : '';
@@ -171,7 +173,22 @@ function populateTiles(data) {
                         cellContent = cellContent.substring(0, 500) + ' ...[]';
                     }
                     text.innerHTML = cellContent;
-                    tile.appendChild(text);
+                    tileContent.appendChild(text);
+                }
+            });
+
+            const goToPage = document.createElement('div');
+            goToPage.className = 'go-to-page';
+            if (row['Linkedin_URL']) {
+                goToPage.innerHTML = `<a href="${row['Linkedin_URL']}" target="_blank">Go to the page</a>`;
+            }
+
+            tile.appendChild(tileContent);
+            tile.appendChild(goToPage);
+
+            tile.addEventListener('scroll', function(event) {
+                if (event.target.scrollLeft === 0) {
+                    container.removeChild(tile);
                 }
             });
 
