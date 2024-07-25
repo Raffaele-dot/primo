@@ -5,7 +5,8 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    align-items: center;
 }
 
 button {
@@ -27,32 +28,41 @@ button.active {
     background-color: #ff5722;
 }
 
+#openFilterModal {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 100;
+}
+
 .tiles-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 10px;
     width: 100%;
-    max-width: 600px; /* Maximum width for desktop */
 }
 
 .tile-wrapper {
     position: relative;
     margin: 10px 0;
     width: 100%;
+    max-width: 600px; /* Maximum width for desktop */
 }
 
 .background-tile {
     position: absolute;
     top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    left: 2.5%;
+    width: 95%;
+    height: 100%;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
 }
 
 .apply, .trash {
