@@ -31,16 +31,53 @@ button.active {
     padding: 10px;
 }
 
+.tile-wrapper {
+    position: relative;
+    margin: 10px 0;
+}
+
+.background-tile {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 1;
+}
+
+.apply, .trash {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+}
+
+.apply {
+    background-color: #007acc;
+}
+
+.trash {
+    background-color: #ff5722;
+}
+
 .tile {
     background-color: #252526;
     border: 1px solid #333;
     border-radius: 5px;
-    margin: 10px 0;
     padding: 15px;
     width: calc(100% - 30px); /* Full width minus padding */
     box-sizing: border-box;
     color: #d4d4d4;
-    transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 2;
+    position: relative;
+    transition: transform 0.3s ease;
 }
 
 .tile h3 {
@@ -49,15 +86,10 @@ button.active {
     color: #569cd6; /* Blue color similar to Visual Studio Code */
 }
 
-.tile.hide {
-    transform: translateX(-100%);
-    opacity: 0;
-}
-
 .modal {
     display: none; 
     position: fixed; 
-    z-index: 1; 
+    z-index: 3; 
     left: 0;
     top: 0;
     width: 100%; 
