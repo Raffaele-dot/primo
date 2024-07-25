@@ -31,7 +31,7 @@ button.active {
 #openFilterModal {
     position: fixed;
     bottom: 20px;
-    right: 20px;
+    left: 20px;
     z-index: 100;
 }
 
@@ -41,13 +41,14 @@ button.active {
     align-items: center;
     padding: 10px;
     width: 100%;
+    max-width: 600px;
+    position: relative;
 }
 
 .tile-wrapper {
     position: relative;
     margin: 10px 0;
     width: 100%;
-    max-width: 600px; /* Maximum width for desktop */
 }
 
 .background-tile {
