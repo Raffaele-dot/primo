@@ -105,8 +105,6 @@ function filterColumnValues() {
             return lowerValue.includes(keyword);
         }
     });
-    console.log('Preview Filter - Keyword:', keyword, 'isNotFilter:', isNotFilter);
-    console.log('Preview Filter - Filtered Values:', filteredValues);
     createValueButtons(filteredValues);
 }
 
@@ -146,8 +144,8 @@ function applyFilters() {
             const cellValue = row[column]?.toLowerCase();
             const { include, exclude } = filters[column];
 
-            const isIncluded = include.length === 0 || include.includes(cellValue);
-            const isExcluded = exclude.includes(cellValue);
+            const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
+            const isExcluded = exclude.some(value => cellValue.includes(value));
 
             return isIncluded && !isExcluded;
         });
