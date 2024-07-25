@@ -31,6 +31,7 @@ let filteredData = [];
 let currentColumn = '';
 let currentValues = [];
 let isNotFilter = false;
+let filters = {};
 
 function fetchColumns() {
     fetch('/api/columns')
@@ -127,14 +128,31 @@ function applyFilters() {
     const selectedValues = Array.from(document.querySelectorAll('#valueContainer input[type="checkbox"]:checked'))
                                 .map(checkbox => checkbox.value.toLowerCase());
 
+    if (!filters[currentColumn]) {
+        filters[currentColumn] = {
+            include: [],
+            exclude: []
+        };
+    }
+
+    if (isNotFilter) {
+        filters[currentColumn].exclude.push(...selectedValues);
+    } else {
+        filters[currentColumn].include.push(...selectedValues);
+    }
+
     filteredData = data.filter(row => {
-        const cellValue = row[currentColumn]?.toLowerCase();
-        if (isNotFilter) {
-            return !selectedValues.includes(cellValue);
-        } else {
-            return selectedValues.includes(cellValue);
-        }
+        return Object.keys(filters).every(column => {
+            const cellValue = row[column]?.toLowerCase();
+            const { include, exclude } = filters[column];
+
+            const isIncluded = include.length === 0 || include.includes(cellValue);
+            const isExcluded = exclude.includes(cellValue);
+
+            return isIncluded && !isExcluded;
+        });
     });
+
     populateTiles(filteredData);
 }
 
