@@ -4,38 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Excel Data Viewer</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-    <div id="container">
-        <button id="openFilterModal">Filter</button>
-        <div id="tiles-container" class="tiles-container"></div>
-    </div>
-
-    <!-- Filter Modal -->
-    <div id="filterModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Select a column to filter</h2>
-            <div id="columnContainer"></div>
-        </div>
-    </div>
-
-    <!-- Value Modal -->
-    <div id="valueModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Select a value to filter</h2>
-            <div class="filter-actions">
-                <input type="text" id="keywordInput" placeholder="Enter keyword">
-                <button id="deselectAllButton">Deselect All</button>
-                <button id="notButton">Include</button>
-                <button id="applyFilterButton">Apply Filter</button>
-            </div>
-            <div id="valueContainer"></div>
-        </div>
-    </div>
-
-    <script src="/static/script.js"></script>
+    <iframe src="/static/content.html"></iframe>
 </body>
 </html>
