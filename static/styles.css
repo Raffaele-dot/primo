@@ -37,26 +37,21 @@ button.active {
     border-radius: 5px;
     margin: 10px 0;
     padding: 15px;
-    width: calc(100% - 30px);
+    width: calc(100% - 30px); /* Full width minus padding */
     box-sizing: border-box;
     color: #d4d4d4;
-    display: flex;
-    overflow-x: auto;
-}
-
-.tile-content {
-    flex: 1;
+    transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .tile h3 {
     margin-top: 0;
     font-weight: bold;
-    color: #569cd6;
+    color: #569cd6; /* Blue color similar to Visual Studio Code */
 }
 
-.tile .go-to-page {
-    white-space: nowrap;
-    padding-left: 20px;
+.tile.hide {
+    transform: translateX(-100%);
+    opacity: 0;
 }
 
 .modal {
@@ -111,7 +106,7 @@ button.active {
 }
 
 .filter-actions button.active {
-    background-color: #ff5722;
+    background-color: #ff5722; /* Highlight active "Not" button */
 }
 
 .close {
