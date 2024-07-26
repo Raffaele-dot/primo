@@ -71,7 +71,7 @@ function createColumnButtons(columns) {
 }
 
 function fetchColumnValues(column) {
-    currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
+    currentValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
     createValueButtons(currentValues);
 }
 
@@ -152,6 +152,7 @@ function applyFilters() {
         filters[currentColumn].include = selectedValues;
     }
 
+    // Apply filters to the data
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
             const cellValue = row[column] ? row[column].toString().toLowerCase() : '';
@@ -165,6 +166,11 @@ function applyFilters() {
     });
 
     populateTiles(filteredData);
+
+    // Reflect the applied filters in the preview
+    Object.keys(filters).forEach(column => {
+        fetchColumnValues(column);
+    });
 }
 
 function populateTiles(data) {
