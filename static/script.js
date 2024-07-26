@@ -141,7 +141,7 @@ function applyFilters() {
 
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
-            const cellValue = row[column]?.toLowerCase();
+            const cellValue = row[column] ? row[column].toString().toLowerCase() : '';
             const { include, exclude } = filters[column];
 
             const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
