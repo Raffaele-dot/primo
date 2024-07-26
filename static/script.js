@@ -83,7 +83,7 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = true; // Select all by default
+        checkbox.checked = isValueSelected(currentColumn, value); // Reflect filter status
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -94,12 +94,24 @@ function createValueButtons(values) {
     });
 }
 
+function isValueSelected(column, value) {
+    const lowerValue = value.toLowerCase();
+    if (filters[column]) {
+        const { include, exclude } = filters[column];
+        if (isNotFilter) {
+            return !exclude.includes(lowerValue);
+        } else {
+            return include.includes(lowerValue) || include.length === 0;
+        }
+    }
+    return true;
+}
+
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
         if (isNotFilter) {
-            // Exclude values containing the keyword
             return !lowerValue.includes(keyword);
         } else {
             return lowerValue.includes(keyword);
@@ -120,6 +132,7 @@ function toggleNotFilter() {
     const notButton = document.getElementById('notButton');
     notButton.classList.toggle('active', isNotFilter);
     notButton.innerText = isNotFilter ? 'Not' : 'Include';
+    filterColumnValues();
 }
 
 function applyFilters() {
@@ -134,9 +147,9 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude.push(...selectedValues);
+        filters[currentColumn].exclude = selectedValues;
     } else {
-        filters[currentColumn].include.push(...selectedValues);
+        filters[currentColumn].include = selectedValues;
     }
 
     filteredData = data.filter(row => {
