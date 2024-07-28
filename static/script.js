@@ -23,21 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
         toggleNotFilter();
         filterColumnValues();
     });
-
-    // Close modal event listeners
-    document.querySelectorAll('.modal .close').forEach(closeButton => {
-        closeButton.addEventListener('click', function() {
-            closeModal(this.closest('.modal').id);
-        });
-    });
-
-    window.addEventListener('click', function(event) {
-        document.querySelectorAll('.modal').forEach(modal => {
-            if (event.target == modal) {
-                modal.style.display = 'none';
-            }
-        });
-    });
 });
 
 let columns = [];
@@ -156,7 +141,7 @@ function applyFilters() {
 
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
-            const cellValue = row[column]?.toLowerCase();
+            const cellValue = row[column]?.toLowerCase() || '';
             const { include, exclude } = filters[column];
 
             const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
@@ -165,6 +150,10 @@ function applyFilters() {
             return isIncluded && !isExcluded;
         });
     });
+
+    console.log("Filtered data after applying filters:", filteredData);
+    console.log("Included values:", filters[currentColumn].include);
+    console.log("Excluded values:", filters[currentColumn].exclude);
 
     populateTiles(filteredData);
 }
@@ -293,3 +282,17 @@ function closeModal(modalId) {
     const modal = document.getElementById(modalId);
     modal.style.display = 'none';
 }
+
+document.querySelectorAll('.modal .close').forEach(closeButton => {
+    closeButton.addEventListener('click', function() {
+        closeModal(this.closest('.modal').id);
+    });
+});
+
+window.addEventListener('click', function(event) {
+    document.querySelectorAll('.modal').forEach(modal => {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    });
+});
