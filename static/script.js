@@ -96,16 +96,36 @@ function createValueButtons(values) {
 
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
-    const filteredValues = currentValues.filter(value => {
+    const filteredValues = currentValues.map(value => {
         const lowerValue = value.toLowerCase();
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = value;
+        checkbox.checked = !isNotFilter;
+
         if (isNotFilter) {
-            // Exclude values containing the keyword
-            return !lowerValue.includes(keyword);
+            // Exclude values containing the keyword but keep them visible and unchecked
+            if (lowerValue.includes(keyword)) {
+                checkbox.checked = false;
+            }
         } else {
-            return lowerValue.includes(keyword);
+            // Include only values containing the keyword
+            if (!lowerValue.includes(keyword)) {
+                return null;
+            }
         }
-    });
-    createValueButtons(filteredValues);
+
+        const div = document.createElement('div');
+        const label = document.createElement('label');
+        label.innerText = value;
+        div.appendChild(checkbox);
+        div.appendChild(label);
+        return div;
+    }).filter(div => div !== null);
+
+    const valueContainer = document.getElementById('valueContainer');
+    valueContainer.innerHTML = ''; // Clear existing buttons
+    filteredValues.forEach(div => valueContainer.appendChild(div));
 }
 
 function deselectAllValues() {
