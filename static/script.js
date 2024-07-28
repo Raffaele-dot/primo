@@ -83,7 +83,7 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = !isNotFilter; // Check all by default for include, uncheck for not
+        checkbox.checked = !isNotFilter; // Default to checked unless "Not" filter is active
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -92,15 +92,29 @@ function createValueButtons(values) {
 
         valueContainer.appendChild(div);
     });
+
+    if (isNotFilter) {
+        const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
+        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.value.toLowerCase().includes(keyword)) {
+                checkbox.checked = false; // Uncheck values containing the keyword
+            }
+        });
+    }
 }
 
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        return lowerValue.includes(keyword);
+        if (isNotFilter) {
+            // Show all values, uncheck those containing the keyword
+            return true;
+        } else {
+            return lowerValue.includes(keyword);
+        }
     });
-
     createValueButtons(filteredValues);
 }
 
@@ -130,9 +144,9 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude = [...new Set([...filters[currentColumn].exclude, ...currentValues.map(v => v.toLowerCase()).filter(v => !selectedValues.includes(v))])];
+        filters[currentColumn].exclude.push(...selectedValues);
     } else {
-        filters[currentColumn].include = [...new Set([...filters[currentColumn].include, ...selectedValues])];
+        filters[currentColumn].include.push(...selectedValues);
     }
 
     filteredData = data.filter(row => {
