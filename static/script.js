@@ -72,10 +72,10 @@ function createColumnButtons(columns) {
 
 function fetchColumnValues(column) {
     currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
-    createValueButtons(currentValues);
+    createValueButtons(currentValues, isNotFilter, '');
 }
 
-function createValueButtons(values) {
+function createValueButtons(values, isNotFilter, keyword) {
     const valueContainer = document.getElementById('valueContainer');
     valueContainer.innerHTML = ''; // Clear existing buttons
     values.forEach(value => {
@@ -83,12 +83,12 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = !isNotFilter; // Default to checked for include, unchecked for not filter
-
-        if (isNotFilter && value.toLowerCase().includes(document.getElementById('keywordInput').value.trim().toLowerCase())) {
-            checkbox.checked = false; // Uncheck if it contains the keyword when "Not" filter is active
+        // If 'Not' filter is active, uncheck boxes containing the keyword, otherwise check them
+        if (isNotFilter && value.toLowerCase().includes(keyword)) {
+            checkbox.checked = false;
+        } else {
+            checkbox.checked = true;
         }
-
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -102,7 +102,7 @@ function createValueButtons(values) {
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => value.toLowerCase().includes(keyword));
-    createValueButtons(filteredValues);
+    createValueButtons(filteredValues, isNotFilter, keyword);
 }
 
 function deselectAllValues() {
@@ -117,6 +117,7 @@ function toggleNotFilter() {
     const notButton = document.getElementById('notButton');
     notButton.classList.toggle('active', isNotFilter);
     notButton.innerText = isNotFilter ? 'Not' : 'Include';
+    filterColumnValues();
 }
 
 function applyFilters() {
@@ -131,14 +132,16 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude.push(...selectedValues);
+        filters[currentColumn].exclude = filters[currentColumn].exclude.concat(selectedValues);
+        filters[currentColumn].include = filters[currentColumn].include.filter(value => !selectedValues.includes(value));
     } else {
-        filters[currentColumn].include.push(...selectedValues);
+        filters[currentColumn].include = filters[currentColumn].include.concat(selectedValues);
+        filters[currentColumn].exclude = filters[currentColumn].exclude.filter(value => !selectedValues.includes(value));
     }
 
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
-            const cellValue = row[column]?.toLowerCase();
+            const cellValue = row[column]?.toLowerCase() || '';
             const { include, exclude } = filters[column];
 
             const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
