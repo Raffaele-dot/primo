@@ -144,8 +144,8 @@ function applyFilters() {
             const cellValue = row[column]?.toLowerCase() || '';
             const { include, exclude } = filters[column];
 
-            const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
-            const isExcluded = exclude.some(value => cellValue.includes(value));
+            const isIncluded = include.length === 0 || include.includes(cellValue);
+            const isExcluded = exclude.length > 0 && exclude.includes(cellValue);
 
             return isIncluded && !isExcluded;
         });
