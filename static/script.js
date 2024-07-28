@@ -74,7 +74,7 @@ function createColumnButtons(columns) {
 
 function fetchColumnValues(column) {
     currentValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
-    console.log("Current values for column", column, ":", currentValues);
+    console.log(`Current values for column ${column}:`, currentValues);
     createValueButtons(currentValues);
 }
 
@@ -120,7 +120,7 @@ function filterColumnValues() {
             return lowerValue.includes(keyword);
         }
     });
-    console.log("Filtered values based on keyword", keyword, ":", filteredValues);
+    console.log(`Filtered values based on keyword "${keyword}":`, filteredValues);
     createValueButtons(filteredValues);
 }
 
@@ -156,7 +156,7 @@ function applyFilters() {
         filters[currentColumn].include = selectedValues;
     }
 
-    console.log("Filters applied for column", currentColumn, ":", filters);
+    console.log(`Filters applied for column ${currentColumn}:`, filters);
 
     // Apply filters to the data
     filteredData = data.filter(row => {
