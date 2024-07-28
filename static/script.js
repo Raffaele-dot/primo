@@ -38,6 +38,7 @@ function fetchColumns() {
         .then(response => response.json())
         .then(fetchedColumns => {
             columns = fetchedColumns;
+            console.log("Fetched columns:", columns);
             createColumnButtons(columns);
         })
         .catch(error => console.error('Error fetching columns:', error));
@@ -49,6 +50,7 @@ function fetchData() {
         .then(fetchedData => {
             data = fetchedData;
             filteredData = fetchedData;
+            console.log("Fetched data:", data);
             populateTiles(fetchedData);
         })
         .catch(error => console.error('Error fetching data:', error));
@@ -72,6 +74,7 @@ function createColumnButtons(columns) {
 
 function fetchColumnValues(column) {
     currentValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
+    console.log("Current values for column", column, ":", currentValues);
     createValueButtons(currentValues);
 }
 
@@ -117,6 +120,7 @@ function filterColumnValues() {
             return lowerValue.includes(keyword);
         }
     });
+    console.log("Filtered values based on keyword", keyword, ":", filteredValues);
     createValueButtons(filteredValues);
 }
 
@@ -152,6 +156,8 @@ function applyFilters() {
         filters[currentColumn].include = selectedValues;
     }
 
+    console.log("Filters applied for column", currentColumn, ":", filters);
+
     // Apply filters to the data
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
@@ -164,6 +170,8 @@ function applyFilters() {
             return isIncluded && !isExcluded;
         });
     });
+
+    console.log("Filtered data after applying filters:", filteredData);
 
     populateTiles(filteredData);
 
