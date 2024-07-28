@@ -83,7 +83,7 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = true; // Select all by default
+        checkbox.checked = !isNotFilter; // Check all by default for include, uncheck for not
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -96,36 +96,12 @@ function createValueButtons(values) {
 
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
-    const filteredValues = currentValues.map(value => {
+    const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.value = value;
-        checkbox.checked = !isNotFilter;
+        return lowerValue.includes(keyword);
+    });
 
-        if (isNotFilter) {
-            // Exclude values containing the keyword but keep them visible and unchecked
-            if (lowerValue.includes(keyword)) {
-                checkbox.checked = false;
-            }
-        } else {
-            // Include only values containing the keyword
-            if (!lowerValue.includes(keyword)) {
-                return null;
-            }
-        }
-
-        const div = document.createElement('div');
-        const label = document.createElement('label');
-        label.innerText = value;
-        div.appendChild(checkbox);
-        div.appendChild(label);
-        return div;
-    }).filter(div => div !== null);
-
-    const valueContainer = document.getElementById('valueContainer');
-    valueContainer.innerHTML = ''; // Clear existing buttons
-    filteredValues.forEach(div => valueContainer.appendChild(div));
+    createValueButtons(filteredValues);
 }
 
 function deselectAllValues() {
@@ -154,26 +130,22 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude = selectedValues;
+        filters[currentColumn].exclude = [...new Set([...filters[currentColumn].exclude, ...currentValues.map(v => v.toLowerCase()).filter(v => !selectedValues.includes(v))])];
     } else {
-        filters[currentColumn].include = selectedValues;
+        filters[currentColumn].include = [...new Set([...filters[currentColumn].include, ...selectedValues])];
     }
 
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
-            const cellValue = row[column]?.toLowerCase() || '';
+            const cellValue = row[column]?.toLowerCase();
             const { include, exclude } = filters[column];
 
-            const isIncluded = include.length === 0 || include.includes(cellValue);
-            const isExcluded = exclude.length > 0 && exclude.includes(cellValue);
+            const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
+            const isExcluded = exclude.some(value => cellValue.includes(value));
 
             return isIncluded && !isExcluded;
         });
     });
-
-    console.log("Filtered data after applying filters:", filteredData);
-    console.log("Included values:", filters[currentColumn].include);
-    console.log("Excluded values:", filters[currentColumn].exclude);
 
     populateTiles(filteredData);
 }
