@@ -83,7 +83,12 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = !isNotFilter; // Default to checked unless "Not" filter is active
+        checkbox.checked = !isNotFilter; // Default to checked for include, unchecked for not filter
+
+        if (isNotFilter && value.toLowerCase().includes(document.getElementById('keywordInput').value.trim().toLowerCase())) {
+            checkbox.checked = false; // Uncheck if it contains the keyword when "Not" filter is active
+        }
+
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -92,29 +97,11 @@ function createValueButtons(values) {
 
         valueContainer.appendChild(div);
     });
-
-    if (isNotFilter) {
-        const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
-        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            if (checkbox.value.toLowerCase().includes(keyword)) {
-                checkbox.checked = false; // Uncheck values containing the keyword
-            }
-        });
-    }
 }
 
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
-    const filteredValues = currentValues.filter(value => {
-        const lowerValue = value.toLowerCase();
-        if (isNotFilter) {
-            // Show all values, uncheck those containing the keyword
-            return true;
-        } else {
-            return lowerValue.includes(keyword);
-        }
-    });
+    const filteredValues = currentValues.filter(value => value.toLowerCase().includes(keyword));
     createValueButtons(filteredValues);
 }
 
