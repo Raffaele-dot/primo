@@ -14,14 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
         deselectAllValues();
     });
 
-    document.getElementById('applyFilterButton').addEventListener('click', function() {
-        applyFilters();
-        closeModal('valueModal');
-    });
-
     document.getElementById('notButton').addEventListener('click', function() {
         toggleNotFilter();
         filterColumnValues();
+    });
+
+    document.getElementById('applyFilterButton').addEventListener('click', function() {
+        applyFilters();
+        closeModal('valueModal');
     });
 });
 
@@ -72,10 +72,10 @@ function createColumnButtons(columns) {
 
 function fetchColumnValues(column) {
     currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
-    createValueButtons(currentValues, isNotFilter, '');
+    createValueButtons(currentValues);
 }
 
-function createValueButtons(values, isNotFilter, keyword) {
+function createValueButtons(values) {
     const valueContainer = document.getElementById('valueContainer');
     valueContainer.innerHTML = ''; // Clear existing buttons
     values.forEach(value => {
@@ -83,12 +83,7 @@ function createValueButtons(values, isNotFilter, keyword) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        // If 'Not' filter is active, uncheck boxes containing the keyword, otherwise check them
-        if (isNotFilter && value.toLowerCase().includes(keyword)) {
-            checkbox.checked = false;
-        } else {
-            checkbox.checked = true;
-        }
+        checkbox.checked = true; // Select all by default
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -101,8 +96,20 @@ function createValueButtons(values, isNotFilter, keyword) {
 
 function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
-    const filteredValues = currentValues.filter(value => value.toLowerCase().includes(keyword));
-    createValueButtons(filteredValues, isNotFilter, keyword);
+    const filteredValues = currentValues.filter(value => {
+        const lowerValue = value.toLowerCase();
+        return isNotFilter ? lowerValue.includes(keyword) : lowerValue.includes(keyword);
+    });
+    createValueButtons(filteredValues);
+
+    if (isNotFilter) {
+        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.value.toLowerCase().includes(keyword)) {
+                checkbox.checked = false;
+            }
+        });
+    }
 }
 
 function deselectAllValues() {
@@ -117,7 +124,6 @@ function toggleNotFilter() {
     const notButton = document.getElementById('notButton');
     notButton.classList.toggle('active', isNotFilter);
     notButton.innerText = isNotFilter ? 'Not' : 'Include';
-    filterColumnValues();
 }
 
 function applyFilters() {
@@ -132,16 +138,16 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude = filters[currentColumn].exclude.concat(selectedValues);
-        filters[currentColumn].include = filters[currentColumn].include.filter(value => !selectedValues.includes(value));
+        filters[currentColumn].exclude.push(...selectedValues);
     } else {
-        filters[currentColumn].include = filters[currentColumn].include.concat(selectedValues);
-        filters[currentColumn].exclude = filters[currentColumn].exclude.filter(value => !selectedValues.includes(value));
+        filters[currentColumn].include.push(...selectedValues);
     }
+
+    console.log('Filters applied for column', currentColumn, ':', filters);
 
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
-            const cellValue = row[column]?.toLowerCase() || '';
+            const cellValue = row[column]?.toLowerCase();
             const { include, exclude } = filters[column];
 
             const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
@@ -151,6 +157,7 @@ function applyFilters() {
         });
     });
 
+    console.log('Filtered data after applying filters:', filteredData);
     populateTiles(filteredData);
 }
 
