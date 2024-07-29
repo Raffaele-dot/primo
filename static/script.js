@@ -155,25 +155,29 @@ function applyFilters() {
     console.log("Included values:", filters[currentColumn].include);
     console.log("Excluded values:", filters[currentColumn].exclude);
 
-    updateFilterPreviews();
     populateTiles(filteredData);
+    updateFilterPreviews();
 }
 
 function updateFilterPreviews() {
-    Object.keys(filters).forEach(column => {
+    columns.forEach(column => {
         const columnValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
-        const columnContainer = document.getElementById(column + 'FilterPreview');
-        columnContainer.innerHTML = '';
+        const valueContainer = document.getElementById('valueContainer');
+        valueContainer.innerHTML = ''; // Clear existing buttons
+
         columnValues.forEach(value => {
+            const div = document.createElement('div');
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
             checkbox.value = value;
-            checkbox.checked = !filters[column].exclude.includes(value.toLowerCase());
-            columnContainer.appendChild(checkbox);
+            checkbox.checked = true;
+            div.appendChild(checkbox);
 
             const label = document.createElement('label');
             label.innerText = value;
-            columnContainer.appendChild(label);
+            div.appendChild(label);
+
+            valueContainer.appendChild(div);
         });
     });
 }
