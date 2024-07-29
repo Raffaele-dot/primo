@@ -177,6 +177,8 @@ function updateFilterPreviews() {
                 checkbox.checked = true;
             } else if (exclude.includes(lowerValue)) {
                 checkbox.checked = false;
+            } else {
+                checkbox.checked = true;
             }
         });
     });
