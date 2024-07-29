@@ -71,7 +71,7 @@ function createColumnButtons(columns) {
 }
 
 function fetchColumnValues(column) {
-    currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
+    currentValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
     createValueButtons(currentValues);
 }
 
@@ -105,19 +105,7 @@ function filterColumnValues() {
             return lowerValue.includes(keyword);
         }
     });
-
-    if (isNotFilter) {
-        // Mark the excluded values as unchecked
-        createValueButtons(currentValues);
-        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            if (filteredValues.includes(checkbox.value)) {
-                checkbox.checked = false;
-            }
-        });
-    } else {
-        createValueButtons(filteredValues);
-    }
+    createValueButtons(filteredValues);
 }
 
 function deselectAllValues() {
@@ -173,17 +161,19 @@ function applyFilters() {
 
 function updateFilterPreviews() {
     Object.keys(filters).forEach(column => {
-        fetchColumnValues(column);
-        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            const cellValue = checkbox.value.toLowerCase();
-            if (filters[column].exclude.includes(cellValue)) {
-                checkbox.checked = false;
-            } else if (filters[column].include.length > 0 && !filters[column].include.includes(cellValue)) {
-                checkbox.checked = false;
-            } else {
-                checkbox.checked = true;
-            }
+        const columnValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
+        const columnContainer = document.getElementById(column + 'FilterPreview');
+        columnContainer.innerHTML = '';
+        columnValues.forEach(value => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = value;
+            checkbox.checked = !filters[column].exclude.includes(value.toLowerCase());
+            columnContainer.appendChild(checkbox);
+
+            const label = document.createElement('label');
+            label.innerText = value;
+            columnContainer.appendChild(label);
         });
     });
 }
