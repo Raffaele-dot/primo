@@ -98,14 +98,18 @@ function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        if (isNotFilter) {
-            // Exclude values containing the keyword
-            return !lowerValue.includes(keyword);
-        } else {
-            return lowerValue.includes(keyword);
-        }
+        return isNotFilter ? lowerValue.includes(keyword) : !lowerValue.includes(keyword);
     });
-    createValueButtons(filteredValues);
+    createValueButtons(currentValues);
+    if (isNotFilter) {
+        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            const lowerValue = checkbox.value.toLowerCase();
+            if (filteredValues.includes(lowerValue)) {
+                checkbox.checked = false;
+            }
+        });
+    }
 }
 
 function deselectAllValues() {
@@ -155,7 +159,27 @@ function applyFilters() {
     console.log("Included values:", filters[currentColumn].include);
     console.log("Excluded values:", filters[currentColumn].exclude);
 
+    updateFilterPreviews();
     populateTiles(filteredData);
+}
+
+function updateFilterPreviews() {
+    Object.keys(filters).forEach(column => {
+        const include = filters[column].include;
+        const exclude = filters[column].exclude;
+
+        const valueContainer = document.getElementById('valueContainer');
+        const checkboxes = valueContainer.querySelectorAll('input[type="checkbox"]');
+
+        checkboxes.forEach(checkbox => {
+            const lowerValue = checkbox.value.toLowerCase();
+            if (include.includes(lowerValue)) {
+                checkbox.checked = true;
+            } else if (exclude.includes(lowerValue)) {
+                checkbox.checked = false;
+            }
+        });
+    });
 }
 
 function populateTiles(data) {
