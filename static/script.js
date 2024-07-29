@@ -98,17 +98,25 @@ function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        return isNotFilter ? lowerValue.includes(keyword) : !lowerValue.includes(keyword);
+        if (isNotFilter) {
+            // Exclude values containing the keyword
+            return !lowerValue.includes(keyword);
+        } else {
+            return lowerValue.includes(keyword);
+        }
     });
-    createValueButtons(currentValues);
+
     if (isNotFilter) {
+        // Mark the excluded values as unchecked
+        createValueButtons(currentValues);
         const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
-            const lowerValue = checkbox.value.toLowerCase();
-            if (filteredValues.includes(lowerValue)) {
+            if (filteredValues.includes(checkbox.value)) {
                 checkbox.checked = false;
             }
         });
+    } else {
+        createValueButtons(filteredValues);
     }
 }
 
@@ -165,17 +173,13 @@ function applyFilters() {
 
 function updateFilterPreviews() {
     Object.keys(filters).forEach(column => {
-        const include = filters[column].include;
-        const exclude = filters[column].exclude;
-
-        const valueContainer = document.getElementById('valueContainer');
-        const checkboxes = valueContainer.querySelectorAll('input[type="checkbox"]');
-
+        fetchColumnValues(column);
+        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
-            const lowerValue = checkbox.value.toLowerCase();
-            if (include.includes(lowerValue)) {
-                checkbox.checked = true;
-            } else if (exclude.includes(lowerValue)) {
+            const cellValue = checkbox.value.toLowerCase();
+            if (filters[column].exclude.includes(cellValue)) {
+                checkbox.checked = false;
+            } else if (filters[column].include.length > 0 && !filters[column].include.includes(cellValue)) {
                 checkbox.checked = false;
             } else {
                 checkbox.checked = true;
