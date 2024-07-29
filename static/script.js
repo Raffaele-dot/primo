@@ -14,14 +14,14 @@ document.addEventListener('DOMContentLoaded', function() {
         deselectAllValues();
     });
 
-    document.getElementById('notButton').addEventListener('click', function() {
-        toggleNotFilter();
-        filterColumnValues();
-    });
-
     document.getElementById('applyFilterButton').addEventListener('click', function() {
         applyFilters();
         closeModal('valueModal');
+    });
+
+    document.getElementById('notButton').addEventListener('click', function() {
+        toggleNotFilter();
+        filterColumnValues();
     });
 });
 
@@ -98,18 +98,14 @@ function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        return isNotFilter ? lowerValue.includes(keyword) : lowerValue.includes(keyword);
+        if (isNotFilter) {
+            // Exclude values containing the keyword
+            return !lowerValue.includes(keyword);
+        } else {
+            return lowerValue.includes(keyword);
+        }
     });
     createValueButtons(filteredValues);
-
-    if (isNotFilter) {
-        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            if (checkbox.value.toLowerCase().includes(keyword)) {
-                checkbox.checked = false;
-            }
-        });
-    }
 }
 
 function deselectAllValues() {
@@ -138,26 +134,27 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude.push(...selectedValues);
+        filters[currentColumn].exclude = selectedValues;
     } else {
-        filters[currentColumn].include.push(...selectedValues);
+        filters[currentColumn].include = selectedValues;
     }
-
-    console.log('Filters applied for column', currentColumn, ':', filters);
 
     filteredData = data.filter(row => {
         return Object.keys(filters).every(column => {
-            const cellValue = row[column]?.toLowerCase();
+            const cellValue = row[column]?.toLowerCase() || '';
             const { include, exclude } = filters[column];
 
-            const isIncluded = include.length === 0 || include.some(value => cellValue.includes(value));
-            const isExcluded = exclude.some(value => cellValue.includes(value));
+            const isIncluded = include.length === 0 || include.includes(cellValue);
+            const isExcluded = exclude.length > 0 && exclude.includes(cellValue);
 
             return isIncluded && !isExcluded;
         });
     });
 
-    console.log('Filtered data after applying filters:', filteredData);
+    console.log("Filtered data after applying filters:", filteredData);
+    console.log("Included values:", filters[currentColumn].include);
+    console.log("Excluded values:", filters[currentColumn].exclude);
+
     populateTiles(filteredData);
 }
 
