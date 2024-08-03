@@ -49,6 +49,7 @@ function fetchData() {
         .then(fetchedData => {
             data = fetchedData;
             filteredData = fetchedData;
+            console.log("Total rows in the dataset:", data.length);
             populateTiles(fetchedData);
         })
         .catch(error => console.error('Error fetching data:', error));
@@ -71,7 +72,8 @@ function createColumnButtons(columns) {
 }
 
 function fetchColumnValues(column) {
-    currentValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
+    currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
+    console.log(`Total unique values in the ${column} column:`, currentValues.length);
     createValueButtons(currentValues);
 }
 
@@ -156,30 +158,6 @@ function applyFilters() {
     console.log("Excluded values:", filters[currentColumn].exclude);
 
     populateTiles(filteredData);
-    updateFilterPreviews();
-}
-
-function updateFilterPreviews() {
-    columns.forEach(column => {
-        const columnValues = [...new Set(filteredData.map(row => row[column]).filter(value => value !== null))];
-        const valueContainer = document.getElementById('valueContainer');
-        valueContainer.innerHTML = ''; // Clear existing buttons
-
-        columnValues.forEach(value => {
-            const div = document.createElement('div');
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.value = value;
-            checkbox.checked = true;
-            div.appendChild(checkbox);
-
-            const label = document.createElement('label');
-            label.innerText = value;
-            div.appendChild(label);
-
-            valueContainer.appendChild(div);
-        });
-    });
 }
 
 function populateTiles(data) {
