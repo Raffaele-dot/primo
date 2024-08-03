@@ -49,8 +49,8 @@ function fetchData() {
         .then(fetchedData => {
             data = fetchedData;
             filteredData = fetchedData;
-            populateTiles(fetchedData);
             console.log("Total rows in the dataset:", data.length);
+            populateTiles(fetchedData);
         })
         .catch(error => console.error('Error fetching data:', error));
 }
@@ -73,7 +73,7 @@ function createColumnButtons(columns) {
 
 function fetchColumnValues(column) {
     currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
-    console.log("Total unique values in the " + column + " column:", currentValues.length);
+    console.log(`Total unique values in the ${column} column:`, currentValues.length);
     createValueButtons(currentValues);
 }
 
@@ -85,7 +85,7 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = !isNotFilter; // Select all by default if not "not" filtering
+        checkbox.checked = true; // Select all by default
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -101,12 +101,21 @@ function filterColumnValues() {
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
         if (isNotFilter) {
-            return !lowerValue.includes(keyword);
+            // Show all values but uncheck the ones containing the keyword
+            return true;
         } else {
             return lowerValue.includes(keyword);
         }
     });
     createValueButtons(filteredValues);
+    if (isNotFilter) {
+        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.value.toLowerCase().includes(keyword)) {
+                checkbox.checked = false;
+            }
+        });
+    }
 }
 
 function deselectAllValues() {
@@ -126,6 +135,8 @@ function toggleNotFilter() {
 function applyFilters() {
     const selectedValues = Array.from(document.querySelectorAll('#valueContainer input[type="checkbox"]:checked'))
                                 .map(checkbox => checkbox.value.toLowerCase());
+    const deselectedValues = Array.from(document.querySelectorAll('#valueContainer input[type="checkbox"]:not(:checked)'))
+                                .map(checkbox => checkbox.value.toLowerCase());
 
     if (!filters[currentColumn]) {
         filters[currentColumn] = {
@@ -135,7 +146,7 @@ function applyFilters() {
     }
 
     if (isNotFilter) {
-        filters[currentColumn].exclude = selectedValues;
+        filters[currentColumn].exclude = deselectedValues;
     } else {
         filters[currentColumn].include = selectedValues;
     }
@@ -155,9 +166,8 @@ function applyFilters() {
     console.log("Filtered data after applying filters:", filteredData);
     console.log("Included values:", filters[currentColumn].include);
     console.log("Excluded values:", filters[currentColumn].exclude);
+    console.log(`Unique values in the ${currentColumn} column after applying filters:`, [...new Set(filteredData.map(row => row[currentColumn]))]);
 
-    console.log("Unique values in the " + currentColumn + " column after applying filters:", [...new Set(filteredData.map(row => row[currentColumn]))]);
-    
     populateTiles(filteredData);
 }
 
