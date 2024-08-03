@@ -100,12 +100,7 @@ function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        if (isNotFilter) {
-            // Show all values but uncheck the ones containing the keyword
-            return true;
-        } else {
-            return lowerValue.includes(keyword);
-        }
+        return lowerValue.includes(keyword);
     });
     createValueButtons(filteredValues);
     if (isNotFilter) {
@@ -167,6 +162,15 @@ function applyFilters() {
     console.log(`Unique values in the ${currentColumn} column after applying filters:`, [...new Set(filteredData.map(row => row[currentColumn]))]);
 
     populateTiles(filteredData);
+    updateFilterPreview();
+}
+
+function updateFilterPreview() {
+    columns.forEach(column => {
+        if (filters[column]) {
+            fetchColumnValues(column);
+        }
+    });
 }
 
 function populateTiles(data) {
