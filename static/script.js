@@ -101,13 +101,21 @@ function filterColumnValues() {
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
         if (isNotFilter) {
-            // Exclude values containing the keyword
-            return !lowerValue.includes(keyword);
+            // Show all values but uncheck the ones containing the keyword
+            return true;
         } else {
             return lowerValue.includes(keyword);
         }
     });
     createValueButtons(filteredValues);
+    if (isNotFilter) {
+        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+            if (checkbox.value.toLowerCase().includes(keyword)) {
+                checkbox.checked = false;
+            }
+        });
+    }
 }
 
 function deselectAllValues() {
