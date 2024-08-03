@@ -49,8 +49,8 @@ function fetchData() {
         .then(fetchedData => {
             data = fetchedData;
             filteredData = fetchedData;
-            console.log("Total rows in the dataset:", data.length);
             populateTiles(fetchedData);
+            console.log("Total rows in the dataset:", data.length);
         })
         .catch(error => console.error('Error fetching data:', error));
 }
@@ -73,7 +73,7 @@ function createColumnButtons(columns) {
 
 function fetchColumnValues(column) {
     currentValues = [...new Set(data.map(row => row[column]).filter(value => value !== null))];
-    console.log(`Total unique values in the ${column} column:`, currentValues.length);
+    console.log("Total unique values in the " + column + " column:", currentValues.length);
     createValueButtons(currentValues);
 }
 
@@ -85,7 +85,7 @@ function createValueButtons(values) {
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.value = value;
-        checkbox.checked = true; // Select all by default
+        checkbox.checked = !isNotFilter; // Select all by default if not "not" filtering
         div.appendChild(checkbox);
 
         const label = document.createElement('label');
@@ -100,17 +100,13 @@ function filterColumnValues() {
     const keyword = document.getElementById('keywordInput').value.trim().toLowerCase();
     const filteredValues = currentValues.filter(value => {
         const lowerValue = value.toLowerCase();
-        return lowerValue.includes(keyword);
+        if (isNotFilter) {
+            return !lowerValue.includes(keyword);
+        } else {
+            return lowerValue.includes(keyword);
+        }
     });
     createValueButtons(filteredValues);
-    if (isNotFilter) {
-        const checkboxes = document.querySelectorAll('#valueContainer input[type="checkbox"]');
-        checkboxes.forEach(checkbox => {
-            if (checkbox.value.toLowerCase().includes(keyword)) {
-                checkbox.checked = false;
-            }
-        });
-    }
 }
 
 function deselectAllValues() {
@@ -159,18 +155,10 @@ function applyFilters() {
     console.log("Filtered data after applying filters:", filteredData);
     console.log("Included values:", filters[currentColumn].include);
     console.log("Excluded values:", filters[currentColumn].exclude);
-    console.log(`Unique values in the ${currentColumn} column after applying filters:`, [...new Set(filteredData.map(row => row[currentColumn]))]);
 
+    console.log("Unique values in the " + currentColumn + " column after applying filters:", [...new Set(filteredData.map(row => row[currentColumn]))]);
+    
     populateTiles(filteredData);
-    updateFilterPreview();
-}
-
-function updateFilterPreview() {
-    columns.forEach(column => {
-        if (filters[column]) {
-            fetchColumnValues(column);
-        }
-    });
 }
 
 function populateTiles(data) {
