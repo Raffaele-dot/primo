@@ -149,10 +149,6 @@ function applyFilters() {
             const isIncluded = include.length === 0 || include.includes(cellValue);
             const isExcluded = exclude.length > 0 && exclude.includes(cellValue);
 
-            const includedDebug = include.length === 0 ? "No include filter" : include;
-            const excludedDebug = exclude.length === 0 ? "No exclude filter" : exclude;
-            console.log(`Row value: ${cellValue}, Included: ${includedDebug}, Excluded: ${excludedDebug}, Result: ${isIncluded && !isExcluded}`);
-
             return isIncluded && !isExcluded;
         });
     });
@@ -160,6 +156,7 @@ function applyFilters() {
     console.log("Filtered data after applying filters:", filteredData);
     console.log("Included values:", filters[currentColumn].include);
     console.log("Excluded values:", filters[currentColumn].exclude);
+    console.log(`Unique values in the ${currentColumn} column after applying filters:`, [...new Set(filteredData.map(row => row[currentColumn]))]);
 
     populateTiles(filteredData);
 }
