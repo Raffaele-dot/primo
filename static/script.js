@@ -149,6 +149,10 @@ function applyFilters() {
             const isIncluded = include.length === 0 || include.includes(cellValue);
             const isExcluded = exclude.length > 0 && exclude.includes(cellValue);
 
+            const includedDebug = include.length === 0 ? "No include filter" : include;
+            const excludedDebug = exclude.length === 0 ? "No exclude filter" : exclude;
+            console.log(`Row value: ${cellValue}, Included: ${includedDebug}, Excluded: ${excludedDebug}, Result: ${isIncluded && !isExcluded}`);
+
             return isIncluded && !isExcluded;
         });
     });
